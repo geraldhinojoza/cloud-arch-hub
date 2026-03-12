@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB CheatSheet | Professional Reference</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mongo: {
+                            dark: '#0f172a',
+                            card: '#1e293b',
+                            accent: '#00ed64', // MongoDB Green
+                            blue: '#00684a',
+                            purple: '#8b5cf6',
+                            teal: '#0ea5e9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 70%);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: #00ed64;
+            box-shadow: 0 10px 30px -10px rgba(0, 237, 100, 0.2);
+        }
+        .code-block {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            color: #00ed64;
+        }
+        .section-gradient {
+            background: linear-gradient(90deg, #00ed64 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #00ed64;
+        }
+        .table-row-alt:nth-child(even) {
+            background: rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen">
+
+    <!-- Header Section -->
+    <header class="pt-16 pb-12 px-6 text-center">
+        <div class="inline-block px-4 py-1.5 mb-6 text-xs font-semibold tracking-widest text-mongo-accent bg-mongo-accent/10 border border-mongo-accent/20 rounded-full animate-pulse uppercase">
+            v6.0 Reference Guide
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-4 section-gradient">MongoDB CheatSheet</h1>
+        <h2 class="text-xl md:text-2xl text-slate-400 font-light max-w-2xl mx-auto">
+            A complete reference guide for professional developers. Optimized for speed and performance.
+        </h2>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+        
+        <!-- Section: Core Commands -->
+        <section class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 flex items-center justify-center bg-mongo-accent/10 rounded-xl border border-mongo-accent/20">
+                    <svg class="w-6 h-6 text-mongo-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-100">Core Commands</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Card Component -->
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">show dbs</div>
+                    <p class="text-slate-400 text-sm mb-4">Lists all available databases on the server.</p>
+                    <code class="code-block block font-mono">mongo> show dbs</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">use &lt;db&gt;</div>
+                    <p class="text-slate-400 text-sm mb-4">Switches context to a specific database.</p>
+                    <code class="code-block block font-mono">mongo> use products</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">db</div>
+                    <p class="text-slate-400 text-sm mb-4">Displays the name of the current database.</p>
+                    <code class="code-block block font-mono">mongo> db</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">db.stats()</div>
+                    <p class="text-slate-400 text-sm mb-4">Provides storage statistics for current DB.</p>
+                    <code class="code-block block font-mono">mongo> db.stats()</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">db.dropDatabase()</div>
+                    <p class="text-slate-400 text-sm mb-4">Permanently deletes the current database.</p>
+                    <code class="code-block block font-mono">mongo> db.dropDatabase()</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">db.version()</div>
+                    <p class="text-slate-400 text-sm mb-4">Returns the MongoDB server version.</p>
+                    <code class="code-block block font-mono">mongo> db.version()</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">show collections</div>
+                    <p class="text-slate-400 text-sm mb-4">Lists all collections in the current DB.</p>
+                    <code class="code-block block font-mono">mongo> show collections</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-accent mb-2 text-lg">db.createCollection()</div>
+                    <p class="text-slate-400 text-sm mb-4">Manually creates a new collection.</p>
+                    <code class="code-block block font-mono">db.createCollection("users")</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: CRUD Operations -->
+        <section class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 flex items-center justify-center bg-mongo-teal/10 rounded-xl border border-mongo-teal/20">
+                    <svg class="w-6 h-6 text-mongo-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-100">CRUD Operations</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-teal mb-2 text-lg">insertOne()</div>
+                    <p class="text-slate-400 text-sm mb-4">Adds a single document to a collection.</p>
+                    <code class="code-block block font-mono">db.users.insertOne({name: "John"})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-teal mb-2 text-lg">insertMany()</div>
+                    <p class="text-slate-400 text-sm mb-4">Inserts an array of documents.</p>
+                    <code class="code-block block font-mono">db.users.insertMany([{...}, {...}])</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-teal mb-2 text-lg">updateOne()</div>
+                    <p class="text-slate-400 text-sm mb-4">Updates first matching document.</p>
+                    <code class="code-block block font-mono">db.users.updateOne({id: 1}, {$set: {age: 25}})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-teal mb-2 text-lg">updateMany()</div>
+                    <p class="text-slate-400 text-sm mb-4">Updates all matching documents.</p>
+                    <code class="code-block block font-mono">db.users.updateMany({active: true}, {...})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-teal mb-2 text-lg">deleteOne()</div>
+                    <p class="text-slate-400 text-sm mb-4">Removes a single matching document.</p>
+                    <code class="code-block block font-mono">db.users.deleteOne({id: 1})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-teal mb-2 text-lg">replaceOne()</div>
+                    <p class="text-slate-400 text-sm mb-4">Replaces matching document entirely.</p>
+                    <code class="code-block block font-mono">db.users.replaceOne({id: 1}, {new: "doc"})</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Query Basics -->
+        <section class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 flex items-center justify-center bg-mongo-purple/10 rounded-xl border border-mongo-purple/20">
+                    <svg class="w-6 h-6 text-mongo-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-100">Query Basics</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-purple mb-2 text-lg">find()</div>
+                    <p class="text-slate-400 text-sm mb-4">Query all or filtered documents.</p>
+                    <code class="code-block block font-mono">db.users.find({age: {$gt: 18}})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-purple mb-2 text-lg">findOne()</div>
+                    <p class="text-slate-400 text-sm mb-4">Returns first matching document only.</p>
+                    <code class="code-block block font-mono">db.users.findOne({email: "..."})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-purple mb-2 text-lg">sort() / limit()</div>
+                    <p class="text-slate-400 text-sm mb-4">Order results and constrain count.</p>
+                    <code class="code-block block font-mono">find().sort({name: 1}).limit(5)</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-purple mb-2 text-lg">countDocuments()</div>
+                    <p class="text-slate-400 text-sm mb-4">Get accurate count of filtered docs.</p>
+                    <code class="code-block block font-mono">db.users.countDocuments({age: 20})</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-purple mb-2 text-lg">distinct()</div>
+                    <p class="text-slate-400 text-sm mb-4">Find all unique values for a field.</p>
+                    <code class="code-block block font-mono">db.users.distinct("city")</code>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl group">
+                    <div class="font-mono font-bold text-mongo-purple mb-2 text-lg">explain()</div>
+                    <p class="text-slate-400 text-sm mb-4">Analyzes performance of query execution.</p>
+                    <code class="code-block block font-mono">db.users.find().explain("executionStats")</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Table Sections Wrapper -->
+        <div class="space-y-16">
+            
+            <!-- Query Operators Table -->
+            <div class="overflow-hidden rounded-3xl border border-slate-800 glass-card">
+                <div class="p-6 bg-slate-900/50 border-b border-slate-800">
+                    <h3 class="text-2xl font-bold text-mongo-accent">Query Operators</h3>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Operator</th>
+                                <th class="px-6 py-4">Definition</th>
+                                <th class="px-6 py-4">Example</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-300">
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-accent">$gt / $lt</td>
+                                <td class="px-6 py-4">Greater than / Less than comparison</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{age: {$gt: 21}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-accent">$in</td>
+                                <td class="px-6 py-4">Matches any value in the provided array</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{tags: {$in: ["A", "B"]}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-accent">$and / $or</td>
+                                <td class="px-6 py-4">Logical JOIN of multiple conditions</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$or: [{age: 5}, {age: 10}]}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-accent">$elemMatch</td>
+                                <td class="px-6 py-4">Matches criteria in array elements</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{scores: {$elemMatch: {$gt: 80}}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt">
+                                <td class="px-6 py-4 font-mono text-mongo-accent">$text</td>
+                                <td class="px-6 py-4">Performs search on text-indexed fields</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$text: {$search: "coffee"}}</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Update Operators Table -->
+            <div class="overflow-hidden rounded-3xl border border-slate-800 glass-card">
+                <div class="p-6 bg-slate-900/50 border-b border-slate-800">
+                    <h3 class="text-2xl font-bold text-mongo-teal">Update Operators</h3>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Operator</th>
+                                <th class="px-6 py-4">Definition</th>
+                                <th class="px-6 py-4">Example</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-300">
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-teal">$set / $unset</td>
+                                <td class="px-6 py-4">Sets field value / Removes field</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$set: {status: "A"}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-teal">$inc / $mul</td>
+                                <td class="px-6 py-4">Increment / Multiply numeric values</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$inc: {count: 1}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-teal">$push / $pull</td>
+                                <td class="px-6 py-4">Add or remove values from an array</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$push: {tags: "New"}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt">
+                                <td class="px-6 py-4 font-mono text-mongo-teal">$addToSet</td>
+                                <td class="px-6 py-4">Adds to array only if value unique</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$addToSet: {tags: "unique"}}</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Aggregation Pipeline Table -->
+            <div class="overflow-hidden rounded-3xl border border-slate-800 glass-card">
+                <div class="p-6 bg-slate-900/50 border-b border-slate-800">
+                    <h3 class="text-2xl font-bold text-mongo-purple">Aggregation Pipeline</h3>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Stage</th>
+                                <th class="px-6 py-4">Definition</th>
+                                <th class="px-6 py-4">Example</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-300">
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-purple">$match</td>
+                                <td class="px-6 py-4">Filters documents (reduces dataset)</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$match: {status: "A"}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-purple">$group</td>
+                                <td class="px-6 py-4">Groups documents by specified ID</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$group: {_id: "$cat"}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-purple">$project</td>
+                                <td class="px-6 py-4">Shapes documents (renaming/adding)</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$project: {name: 1}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-mongo-purple">$lookup</td>
+                                <td class="px-6 py-4">Left outer join to another collection</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$lookup: {from: "orders"}}</code></td>
+                            </tr>
+                            <tr class="table-row-alt">
+                                <td class="px-6 py-4 font-mono text-mongo-purple">$unwind</td>
+                                <td class="px-6 py-4">Deconstructs array field to documents</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>{$unwind: "$sizes"}</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Administration Table -->
+            <div class="overflow-hidden rounded-3xl border border-slate-800 glass-card">
+                <div class="p-6 bg-slate-900/50 border-b border-slate-800">
+                    <h3 class="text-2xl font-bold text-slate-100">Administration & Management</h3>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Command</th>
+                                <th class="px-6 py-4">Definition</th>
+                                <th class="px-6 py-4">Example</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-300">
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-white">createIndex()</td>
+                                <td class="px-6 py-4">Optimizes query performance</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>db.col.createIndex({f: 1})</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-white">currentOp()</td>
+                                <td class="px-6 py-4">Lists currently running operations</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>db.currentOp()</code></td>
+                            </tr>
+                            <tr class="table-row-alt border-b border-slate-800/50">
+                                <td class="px-6 py-4 font-mono text-white">watch()</td>
+                                <td class="px-6 py-4">Opens change stream for real-time tracking</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>db.col.watch()</code></td>
+                            </tr>
+                            <tr class="table-row-alt">
+                                <td class="px-6 py-4 font-mono text-white">hostInfo()</td>
+                                <td class="px-6 py-4">System and host diagnostic info</td>
+                                <td class="px-6 py-4 font-mono text-sm"><code>db.hostInfo()</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tools & Utilities -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-2xl flex items-start gap-4">
+                    <div class="bg-mongo-accent/10 p-3 rounded-lg"><svg class="w-6 h-6 text-mongo-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg></div>
+                    <div>
+                        <h4 class="font-bold text-slate-100 text-lg mb-1">mongodump / mongorestore</h4>
+                        <p class="text-slate-400 text-sm mb-2">High-performance BSON backup and restore utilities for database migration and disaster recovery.</p>
+                        <code class="code-block font-mono text-xs">mongodump --db test --out /backup/</code>
+                    </div>
+                </div>
+                <div class="glass-card p-6 rounded-2xl flex items-start gap-4">
+                    <div class="bg-mongo-teal/10 p-3 rounded-lg"><svg class="w-6 h-6 text-mongo-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></div>
+                    <div>
+                        <h4 class="font-bold text-slate-100 text-lg mb-1">mongoexport / mongoimport</h4>
+                        <p class="text-slate-400 text-sm mb-2">Export or import data into JSON, CSV, or TSV formats for integration with third-party tools.</p>
+                        <code class="code-block font-mono text-xs">mongoexport --db users --collection log --out log.json</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Simple sticky footer for LinkedIn reference -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a href="https://www.linkedin.com/in/geraldhinojoza/" target="_blank" class="flex items-center gap-3 bg-white text-mongo-dark px-5 py-3 rounded-full font-bold shadow-2xl hover:scale-105 transition-transform active:scale-95">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            Connect with Gerald Hinojoza
+        </a>
+    </div>
+
+    <script>
+        // Subtle entrance animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+</body>
+</html>

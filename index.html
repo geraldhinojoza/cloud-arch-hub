@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Architecture Hub | Azure Solution Architect Expert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hub: {
+                            dark: '#0f172a',
+                            darker: '#080e1a',
+                            card: '#1e293b',
+                            border: 'rgba(255,255,255,0.08)',
+                            azure: '#0078d4',
+                            azureLight: '#50a8f5',
+                            cyan: '#06b6d4',
+                            accent: '#38bdf8',
+                            purple: '#818cf8',
+                            green: '#34d399',
+                            orange: '#fb923c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --azure: #0078d4;
+            --azure-light: #50a8f5;
+            --cyan: #06b6d4;
+            --accent: #38bdf8;
+            --purple: #818cf8;
+            --green: #34d399;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,120,212,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 85% 20%, rgba(6,182,212,0.1) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0078d4; }
+
+        /* ── Nav ── */
+        .nav-glass {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        /* ── Hero Grid Lines ── */
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* ── Cards ── */
+        .card {
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56,189,248,0.4);
+            box-shadow: 0 12px 40px -12px rgba(0,120,212,0.35);
+        }
+        .card-cheat:hover { border-color: rgba(52,211,153,0.4); box-shadow: 0 12px 40px -12px rgba(52,211,153,0.25); }
+        .card-design:hover { border-color: rgba(129,140,248,0.4); box-shadow: 0 12px 40px -12px rgba(129,140,248,0.25); }
+
+        /* ── Tags ── */
+        .tag {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            padding: 2px 10px;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+        .tag-azure  { background: rgba(0,120,212,0.15);  color: #50a8f5; border: 1px solid rgba(0,120,212,0.3); }
+        .tag-mongo  { background: rgba(52,211,153,0.1);  color: #34d399; border: 1px solid rgba(52,211,153,0.25); }
+        .tag-multi  { background: rgba(129,140,248,0.1); color: #a5b4fc; border: 1px solid rgba(129,140,248,0.25); }
+        .tag-iac    { background: rgba(251,146,60,0.1);  color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
+        .tag-k8s    { background: rgba(6,182,212,0.1);   color: #22d3ee; border: 1px solid rgba(6,182,212,0.25); }
+        .tag-sec    { background: rgba(239,68,68,0.1);   color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+
+        /* ── Gradient Text ── */
+        .text-azure-grad {
+            background: linear-gradient(90deg, #0078d4 0%, #38bdf8 50%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .text-green-grad {
+            background: linear-gradient(90deg, #34d399 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .text-purple-grad {
+            background: linear-gradient(90deg, #818cf8 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── Section divider ── */
+        .section-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.3), transparent);
+        }
+
+        /* ── Search ── */
+        .search-input {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #f1f5f9;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(56,189,248,0.5);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.08);
+        }
+        .search-input::placeholder { color: #64748b; }
+
+        /* ── Category pills ── */
+        .filter-pill {
+            background: rgba(30,41,59,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .filter-pill:hover, .filter-pill.active {
+            background: rgba(0,120,212,0.15);
+            border-color: rgba(56,189,248,0.4);
+            color: #38bdf8;
+        }
+
+        /* ── Icon boxes ── */
+        .icon-box {
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        .icon-box-blue   { background: rgba(0,120,212,0.12); border: 1px solid rgba(0,120,212,0.2); }
+        .icon-box-green  { background: rgba(52,211,153,0.1);  border: 1px solid rgba(52,211,153,0.2); }
+        .icon-box-purple { background: rgba(129,140,248,0.1); border: 1px solid rgba(129,140,248,0.2); }
+
+        /* ── Stat numbers ── */
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* ── Animate on load ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.6s ease forwards; }
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+        /* ── Active section tab ── */
+        .tab-btn { transition: all 0.2s; }
+        .tab-btn.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; }
+        .tab-btn:not(.active) { border-bottom: 2px solid transparent; color: #64748b; }
+
+        /* ── Hidden ── */
+        .hidden-card { display: none !important; }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- ══════════════════════ NAV ══════════════════════ -->
+    <nav class="nav-glass sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                    </svg>
+                </div>
+                <span class="font-display font-bold text-base text-white">Cloud<span class="text-azure-grad">Arch</span> Hub</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-6 text-sm text-slate-400">
+                <a href="#cheatsheets" class="hover:text-white transition-colors">CheatSheets</a>
+                <a href="#designs" class="hover:text-white transition-colors">Arquitecturas</a>
+                <a href="#about" class="hover:text-white transition-colors">Acerca de</a>
+            </div>
+
+            <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank"
+               class="flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-lg transition-all">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════ HERO ══════════════════════ -->
+    <section class="relative overflow-hidden grid-bg pt-24 pb-20 px-6 text-center">
+        <!-- Decorative blobs -->
+        <div class="absolute -top-20 -left-20 w-96 h-96 rounded-full opacity-10 bg-blue-500 blur-[80px] pointer-events-none"></div>
+        <div class="absolute -top-10 right-10 w-72 h-72 rounded-full opacity-8 bg-cyan-400 blur-[60px] pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs font-semibold tracking-widest text-sky-400 bg-sky-400/10 border border-sky-400/20 rounded-full fade-up">
+                <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+                AZURE SOLUTION ARCHITECT EXPERT
+            </div>
+            <h1 class="text-5xl md:text-7xl font-display font-bold tracking-tight mb-5 fade-up delay-1">
+                Cloud <span class="text-azure-grad">Architecture</span> Hub
+            </h1>
+            <p class="text-lg md:text-xl text-slate-400 font-light max-w-2xl mx-auto mb-10 fade-up delay-2">
+                Recursos de referencia profesional: diseños de arquitectura multinube, cheatsheets técnicos y patrones de solución para Azure.
+            </p>
+
+            <!-- Search bar -->
+            <div class="max-w-xl mx-auto relative fade-up delay-3">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input id="searchInput" type="text" placeholder="Buscar cheatsheets, arquitecturas, tecnologías..."
+                    class="search-input w-full pl-12 pr-4 py-3.5 rounded-2xl text-sm">
+            </div>
+
+            <!-- Stats -->
+            <div class="flex items-center justify-center gap-10 mt-12 fade-up delay-4">
+                <div class="text-center">
+                    <div class="stat-number text-azure-grad" id="countCheat">1</div>
+                    <div class="text-xs text-slate-500 mt-1 uppercase tracking-widest">CheatSheets</div>
+                </div>
+                <div class="w-px h-10 bg-white/10"></div>
+                <div class="text-center">
+                    <div class="stat-number text-purple-grad" id="countDesigns">0</div>
+                    <div class="text-xs text-slate-500 mt-1 uppercase tracking-widest">Arquitecturas</div>
+                </div>
+                <div class="w-px h-10 bg-white/10"></div>
+                <div class="text-center">
+                    <div class="stat-number text-green-grad">☁️</div>
+                    <div class="text-xs text-slate-500 mt-1 uppercase tracking-widest">Multinube</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section divider -->
+    <div class="section-line mx-auto max-w-7xl"></div>
+
+    <!-- ══════════════════════ MAIN CONTENT ══════════════════════ -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <!-- ── Filter Pills ── -->
+        <div class="flex flex-wrap items-center gap-3 mb-10">
+            <button class="filter-pill active px-4 py-2 rounded-full" data-filter="all" onclick="filterCards(this, 'all')">
+                Todo
+            </button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="cheatsheet" onclick="filterCards(this, 'cheatsheet')">
+                📋 CheatSheets
+            </button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="design" onclick="filterCards(this, 'design')">
+                🏗️ Arquitecturas
+            </button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="azure" onclick="filterCards(this, 'azure')">
+                ☁️ Azure
+            </button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="multicloud" onclick="filterCards(this, 'multicloud')">
+                🌐 Multinube
+            </button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="iac" onclick="filterCards(this, 'iac')">
+                🔧 IaC
+            </button>
+        </div>
+
+        <!-- ══════════════════════ CHEATSHEETS ══════════════════════ -->
+        <section id="cheatsheets" class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="icon-box icon-box-green">
+                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-display font-bold text-slate-100">CheatSheets</h2>
+                    <p class="text-sm text-slate-500">Referencias rápidas de tecnologías y servicios cloud</p>
+                </div>
+            </div>
+
+            <div id="cheatsheets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- ── MongoDB CheatSheet ── -->
+                <a href="cheatsheets/CheatSheet_MongoDB.html"
+                   class="card card-cheat rounded-2xl p-6 flex flex-col gap-4 group no-underline data-card"
+                   data-type="cheatsheet" data-tags="mongodb database nosql">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl">
+                            🍃
+                        </div>
+                        <span class="tag tag-mongo">Database</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors mb-1">
+                            MongoDB CheatSheet
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Referencia completa de comandos, operadores de consulta, aggregation pipeline, índices y administración. Versión 6.0.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap mt-auto pt-2">
+                        <span class="tag tag-mongo">NoSQL</span>
+                        <span class="tag" style="background:rgba(52,211,153,0.08);color:#6ee7b7;border:1px solid rgba(52,211,153,0.2)">Aggregation</span>
+                        <span class="tag" style="background:rgba(52,211,153,0.08);color:#6ee7b7;border:1px solid rgba(52,211,153,0.2)">Índices</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-slate-500">
+                        <span>v6.0 Reference</span>
+                        <span class="flex items-center gap-1 group-hover:text-emerald-400 transition-colors">
+                            Ver guía
+                            <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+                <!-- ── Placeholder: próximo cheatsheet ── -->
+                <div class="card rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
+                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <p class="text-sm text-slate-600 text-center">Próximo CheatSheet<br><span class="text-xs">Agrega tu archivo en /cheatsheets/</span></p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ══════════════════════ CLOUD DESIGNS ══════════════════════ -->
+        <section id="designs" class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="icon-box icon-box-purple">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-display font-bold text-slate-100">Diseños de Arquitectura</h2>
+                    <p class="text-sm text-slate-500">Patrones multinube, soluciones Azure y diagramas de referencia</p>
+                </div>
+            </div>
+
+            <div id="designs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- ── Placeholder cards ── -->
+                <div class="card card-design rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
+                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <p class="text-sm text-slate-600 text-center">Agrega arquitecturas<br><span class="text-xs">Archivos en /cloud_designs/</span></p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ══════════════════════ HOW TO ADD ══════════════════════ -->
+        <section id="about" class="mb-10">
+            <div class="section-line mb-12"></div>
+            <div class="card rounded-2xl p-8 md:p-10 max-w-3xl mx-auto">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="icon-box icon-box-blue">
+                        <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-display font-bold text-slate-100">¿Cómo agregar contenido?</h2>
+                </div>
+
+                <div class="space-y-6 text-sm text-slate-400 leading-relaxed">
+                    <div>
+                        <p class="text-slate-300 font-medium mb-2">📋 Nuevo CheatSheet</p>
+                        <ol class="list-decimal list-inside space-y-1 pl-2">
+                            <li>Crea tu archivo <code class="text-emerald-400 font-mono bg-white/5 px-1.5 py-0.5 rounded">CheatSheet_NOMBRE.html</code> en <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">/cheatsheets/</code></li>
+                            <li>Agrega una nueva card en <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">index.html</code> siguiendo el bloque de MongoDB</li>
+                            <li>Haz commit y push; GitHub Pages se actualiza automáticamente</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <p class="text-slate-300 font-medium mb-2">🏗️ Nuevo Diseño de Arquitectura</p>
+                        <ol class="list-decimal list-inside space-y-1 pl-2">
+                            <li>Guarda tu archivo HTML/SVG en <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">/cloud_designs/</code></li>
+                            <li>Agrega la card en la sección <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">#designs</code></li>
+                            <li>Usa las clases <code class="font-mono text-indigo-400 bg-white/5 px-1.5 py-0.5 rounded">card card-design</code> y los atributos <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">data-type="design"</code></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ══════════════════════ FOOTER ══════════════════════ -->
+    <footer class="border-t border-white/5 py-8 px-6 text-center text-sm text-slate-600">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <div class="w-5 h-5 rounded bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+                </svg>
+            </div>
+            <span class="font-medium text-slate-500">CloudArch Hub</span>
+        </div>
+        <p>Azure Solution Architect Expert — Recursos técnicos de referencia</p>
+    </footer>
+
+    <!-- ══════════════════════ SCRIPTS ══════════════════════ -->
+    <script>
+        // ── Search ──────────────────────────────────────────────
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            document.querySelectorAll('.data-card').forEach(card => {
+                const text = (card.textContent + ' ' + (card.dataset.tags || '')).toLowerCase();
+                card.classList.toggle('hidden-card', query !== '' && !text.includes(query));
+            });
+        });
+
+        // ── Filter pills ─────────────────────────────────────────
+        function filterCards(btn, filter) {
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.querySelectorAll('.data-card').forEach(card => {
+                if (filter === 'all') {
+                    card.classList.remove('hidden-card');
+                } else {
+                    const type = card.dataset.type || '';
+                    const tags = (card.dataset.tags || '').toLowerCase();
+                    const matches = type === filter || tags.includes(filter);
+                    card.classList.toggle('hidden-card', !matches);
+                }
+            });
+        }
+
+        // ── Update stat counters ─────────────────────────────────
+        function updateCounts() {
+            const cheats = document.querySelectorAll('[data-type="cheatsheet"]').length;
+            const designs = document.querySelectorAll('[data-type="design"]').length;
+            document.getElementById('countCheat').textContent = cheats;
+            document.getElementById('countDesigns').textContent = designs;
+        }
+        updateCounts();
+    </script>
+</body>
+</html>
