@@ -89,8 +89,9 @@
             border-color: rgba(56,189,248,0.4);
             box-shadow: 0 12px 40px -12px rgba(0,120,212,0.35);
         }
-        .card-cheat:hover { border-color: rgba(52,211,153,0.4); box-shadow: 0 12px 40px -12px rgba(52,211,153,0.25); }
+        .card-cheat:hover  { border-color: rgba(52,211,153,0.4);  box-shadow: 0 12px 40px -12px rgba(52,211,153,0.25); }
         .card-design:hover { border-color: rgba(129,140,248,0.4); box-shadow: 0 12px 40px -12px rgba(129,140,248,0.25); }
+        .card-tool:hover   { border-color: rgba(56,189,248,0.4);  box-shadow: 0 12px 40px -12px rgba(56,189,248,0.25); }
 
         /* ── Tags ── */
         .tag {
@@ -220,6 +221,7 @@
             <div class="hidden md:flex items-center gap-6 text-sm text-slate-400">
                 <a href="#cheatsheets" class="hover:text-white transition-colors">CheatSheets</a>
                 <a href="#designs" class="hover:text-white transition-colors">Arquitecturas</a>
+                <a href="#utils" class="hover:text-white transition-colors">Utils</a>
                 <a href="#about" class="hover:text-white transition-colors">Acerca de</a>
             </div>
 
@@ -235,7 +237,6 @@
 
     <!-- ══════════════════════ HERO ══════════════════════ -->
     <section class="relative overflow-hidden grid-bg pt-24 pb-20 px-6 text-center">
-        <!-- Decorative blobs -->
         <div class="absolute -top-20 -left-20 w-96 h-96 rounded-full opacity-10 bg-blue-500 blur-[80px] pointer-events-none"></div>
         <div class="absolute -top-10 right-10 w-72 h-72 rounded-full opacity-8 bg-cyan-400 blur-[60px] pointer-events-none"></div>
 
@@ -288,24 +289,13 @@
 
         <!-- ── Filter Pills ── -->
         <div class="flex flex-wrap items-center gap-3 mb-10">
-            <button class="filter-pill active px-4 py-2 rounded-full" data-filter="all" onclick="filterCards(this, 'all')">
-                Todo
-            </button>
-            <button class="filter-pill px-4 py-2 rounded-full" data-filter="cheatsheet" onclick="filterCards(this, 'cheatsheet')">
-                📋 CheatSheets
-            </button>
-            <button class="filter-pill px-4 py-2 rounded-full" data-filter="design" onclick="filterCards(this, 'design')">
-                🏗️ Arquitecturas
-            </button>
-            <button class="filter-pill px-4 py-2 rounded-full" data-filter="azure" onclick="filterCards(this, 'azure')">
-                ☁️ Azure
-            </button>
-            <button class="filter-pill px-4 py-2 rounded-full" data-filter="multicloud" onclick="filterCards(this, 'multicloud')">
-                🌐 Multinube
-            </button>
-            <button class="filter-pill px-4 py-2 rounded-full" data-filter="iac" onclick="filterCards(this, 'iac')">
-                🔧 IaC
-            </button>
+            <button class="filter-pill active px-4 py-2 rounded-full" data-filter="all" onclick="filterCards(this, 'all')">Todo</button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="cheatsheet" onclick="filterCards(this, 'cheatsheet')">📋 CheatSheets</button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="design" onclick="filterCards(this, 'design')">🏗️ Arquitecturas</button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="tool" onclick="filterCards(this, 'tool')">🔧 Utils</button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="azure" onclick="filterCards(this, 'azure')">☁️ Azure</button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="multicloud" onclick="filterCards(this, 'multicloud')">🌐 Multinube</button>
+            <button class="filter-pill px-4 py-2 rounded-full" data-filter="iac" onclick="filterCards(this, 'iac')">⚙️ IaC</button>
         </div>
 
         <!-- ══════════════════════ CHEATSHEETS ══════════════════════ -->
@@ -323,24 +313,16 @@
             </div>
 
             <div id="cheatsheets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                <!-- ── MongoDB CheatSheet ── -->
                 <a href="cheatsheets/CheatSheet_MongoDB.html"
                    class="card card-cheat rounded-2xl p-6 flex flex-col gap-4 group no-underline data-card"
                    data-type="cheatsheet" data-tags="mongodb database nosql">
                     <div class="flex items-start justify-between">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl">
-                            🍃
-                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-2xl">🍃</div>
                         <span class="tag tag-mongo">Database</span>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors mb-1">
-                            MongoDB CheatSheet
-                        </h3>
-                        <p class="text-sm text-slate-400 leading-relaxed">
-                            Referencia completa de comandos, operadores de consulta, aggregation pipeline, índices y administración. Versión 6.0.
-                        </p>
+                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors mb-1">MongoDB CheatSheet</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">Referencia completa de comandos, operadores de consulta, aggregation pipeline, índices y administración. Versión 6.0.</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap mt-auto pt-2">
                         <span class="tag tag-mongo">NoSQL</span>
@@ -349,23 +331,14 @@
                     </div>
                     <div class="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-slate-500">
                         <span>v6.0 Reference</span>
-                        <span class="flex items-center gap-1 group-hover:text-emerald-400 transition-colors">
-                            Ver guía
-                            <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </span>
+                        <span class="flex items-center gap-1 group-hover:text-emerald-400 transition-colors">Ver guía <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></span>
                     </div>
                 </a>
 
-                <!-- ── Placeholder: próximo cheatsheet ── -->
                 <div class="card rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
-                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    <p class="text-sm text-slate-600 text-center">Próximo CheatSheet<br><span class="text-xs">Agrega tu archivo en /cheatsheets/</span></p>
+                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
+                    <p class="text-sm text-slate-600 text-center">Próximo CheatSheet<br><span class="text-xs">Agrega en /cheatsheets/</span></p>
                 </div>
-
             </div>
         </section>
 
@@ -384,24 +357,16 @@
             </div>
 
             <div id="designs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                <!-- ── Azure ↔ AWS Federated Auth ── -->
                 <a href="cloud_designs/Azure_Aws_Federated_Auth.html"
                    class="card card-design rounded-2xl p-6 flex flex-col gap-4 group no-underline data-card"
                    data-type="design" data-tags="azure aws oidc federated auth multicloud identity">
                     <div class="flex items-start justify-between">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-2xl">
-                            🔐
-                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-2xl">🔐</div>
                         <span class="tag tag-multi">Multinube</span>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-indigo-400 transition-colors mb-1">
-                            Azure ↔ AWS Federated Auth
-                        </h3>
-                        <p class="text-sm text-slate-400 leading-relaxed">
-                            Arquitectura de autenticación federada entre Azure y AWS mediante OIDC. Incluye diagrama interactivo y guía completa para replicar la PoC.
-                        </p>
+                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-indigo-400 transition-colors mb-1">Azure ↔ AWS Federated Auth</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">Arquitectura de autenticación federada entre Azure y AWS mediante OIDC. Incluye diagrama interactivo y guía completa para replicar la PoC.</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap mt-auto pt-2">
                         <span class="tag tag-azure">Azure AD</span>
@@ -410,21 +375,65 @@
                     </div>
                     <div class="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-slate-500">
                         <span>PoC · Banking Data Platform</span>
-                        <span class="flex items-center gap-1 group-hover:text-indigo-400 transition-colors">
-                            Ver diseño
-                            <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
+                        <span class="flex items-center gap-1 group-hover:text-indigo-400 transition-colors">Ver diseño <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></span>
+                    </div>
+                </a>
+
+                <div class="card card-design rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
+                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
+                    <p class="text-sm text-slate-600 text-center">Agrega arquitecturas<br><span class="text-xs">Archivos en /cloud_designs/</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════ UTILS / HERRAMIENTAS ══════════════════════ -->
+        <section id="utils" class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="icon-box icon-box-blue">
+                    <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-display font-bold text-slate-100">Utils &amp; Herramientas</h2>
+                    <p class="text-sm text-slate-500">Herramientas interactivas para arquitectura, modelado y diseño</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- ── FreeDiagram ── -->
+                <a href="utils/freediagram/index.html"
+                   class="card card-tool rounded-2xl p-6 flex flex-col gap-4 group no-underline data-card"
+                   data-type="tool" data-tags="database diagram er schema sql postgresql mysql mongodb oracle databricks snowflake bigquery redshift sqlite freediagram">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-2xl">🗂️</div>
+                        <span class="tag tag-azure">Tool</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-sky-400 transition-colors mb-1">FreeDiagram</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Diseñador visual de esquemas ER/DB. Drag &amp; drop, relaciones FK con líneas bezier, multi-dialecto (PostgreSQL, MySQL, MongoDB, Databricks, BigQuery, Snowflake y más). Export SQL/JSON e Import DDL.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap mt-auto pt-2">
+                        <span class="tag tag-azure">Multi-DB</span>
+                        <span class="tag tag-mongo">ER Diagram</span>
+                        <span class="tag tag-iac">SQL Export</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-slate-500">
+                        <span>11 dialectos · sin dependencias</span>
+                        <span class="flex items-center gap-1 group-hover:text-sky-400 transition-colors">
+                            Abrir herramienta
+                            <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </span>
                     </div>
                 </a>
 
-                <!-- ── Placeholder cards ── -->
-                <div class="card card-design rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
-                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    <p class="text-sm text-slate-600 text-center">Agrega arquitecturas<br><span class="text-xs">Archivos en /cloud_designs/</span></p>
+                <!-- Placeholder -->
+                <div class="card rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
+                    <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
+                    <p class="text-sm text-slate-600 text-center">Próxima herramienta<br><span class="text-xs">Agrega en /utils/</span></p>
                 </div>
 
             </div>
@@ -458,6 +467,14 @@
                             <li>Guarda tu archivo HTML/SVG en <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">/cloud_designs/</code></li>
                             <li>Agrega la card en la sección <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">#designs</code></li>
                             <li>Usa las clases <code class="font-mono text-indigo-400 bg-white/5 px-1.5 py-0.5 rounded">card card-design</code> y los atributos <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">data-type="design"</code></li>
+                        </ol>
+                    </div>
+                    <div>
+                        <p class="text-slate-300 font-medium mb-2">🔧 Nueva herramienta Utils</p>
+                        <ol class="list-decimal list-inside space-y-1 pl-2">
+                            <li>Crea una carpeta en <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">/utils/nombre-herramienta/</code></li>
+                            <li>La herramienta puede ser un proyecto multi-archivo (HTML + CSS + JS)</li>
+                            <li>Agrega la card en la sección <code class="font-mono bg-white/5 px-1.5 py-0.5 rounded text-slate-300">#utils</code> con <code class="font-mono text-sky-400 bg-white/5 px-1.5 py-0.5 rounded">data-type="tool"</code></li>
                         </ol>
                     </div>
                 </div>
@@ -495,7 +512,6 @@
         function filterCards(btn, filter) {
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
             btn.classList.add('active');
-
             document.querySelectorAll('.data-card').forEach(card => {
                 if (filter === 'all') {
                     card.classList.remove('hidden-card');
@@ -510,9 +526,9 @@
 
         // ── Update stat counters ─────────────────────────────────
         function updateCounts() {
-            const cheats = document.querySelectorAll('[data-type="cheatsheet"]').length;
+            const cheats  = document.querySelectorAll('[data-type="cheatsheet"]').length;
             const designs = document.querySelectorAll('[data-type="design"]').length;
-            document.getElementById('countCheat').textContent = cheats;
+            document.getElementById('countCheat').textContent   = cheats;
             document.getElementById('countDesigns').textContent = designs;
         }
         updateCounts();

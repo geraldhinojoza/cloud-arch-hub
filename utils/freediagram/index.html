@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeDiagram — Visual Schema Designer | CloudArch Hub</title>
+
+  <!-- Google Fonts — same as parent site -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ═══════════════════════ NAVBAR ═══════════════════════ -->
+<nav id="navbar">
+
+  <!-- Logo (links back to parent hub) -->
+  <a href="../../index.html" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">Cloud<span>Arch</span> Hub</span>
+  </a>
+
+  <div class="nav-sep"></div>
+
+  <!-- Breadcrumb -->
+  <nav class="nav-breadcrumb">
+    <a href="../../index.html">Hub</a>
+    <span class="sep">/</span>
+    <a href="../">Utils</a>
+    <span class="sep">/</span>
+    <span class="current">FreeDiagram</span>
+  </nav>
+
+  <div class="nav-spacer"></div>
+
+  <!-- DB Selector -->
+  <select id="db-select" class="tb-select" title="Database dialect"></select>
+
+</nav>
+
+<!-- ═══════════════════════ TOOLBAR ═══════════════════════ -->
+<div id="toolbar">
+
+  <div class="tb-group">
+    <button class="tb-btn" id="btn-add-table" title="Add new table (canvas center)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 10h18M3 14h18M9 4v16M15 4v16M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+      </svg>
+      + Table
+    </button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-group">
+    <button class="tb-btn" id="btn-fk-mode" title="Toggle FK draw mode — drag from a column dot to another table">
+      🔗 FK link
+    </button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-group">
+    <button class="tb-btn" id="btn-export" title="Export SQL DDL">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      </svg>
+      Export SQL
+    </button>
+
+    <button class="tb-btn" id="btn-import" title="Import SQL DDL">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/>
+      </svg>
+      Import SQL
+    </button>
+
+    <button class="tb-btn" id="btn-json" title="Export JSON schema">
+      { } JSON
+    </button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-group">
+    <button class="tb-btn" id="btn-save" title="Save to browser local storage (Ctrl+S)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+      </svg>
+      Save
+    </button>
+
+    <button class="tb-btn" id="btn-load" title="Load from browser local storage">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0L8 8m4-4l4 4"/>
+      </svg>
+      Load
+    </button>
+
+    <button class="tb-btn danger" id="btn-clear" title="Clear all tables and relationships">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3M3 7h18"/>
+      </svg>
+      Clear
+    </button>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <!-- Zoom controls -->
+  <div class="tb-group">
+    <button class="tb-btn" id="btn-zoom-out" title="Zoom out">−</button>
+    <span class="zoom-label" id="zoom-label">100%</span>
+    <button class="tb-btn" id="btn-zoom-in" title="Zoom in">+</button>
+    <button class="tb-btn" id="btn-zoom-fit" title="Fit all tables in view">fit</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════ WORKSPACE ═══════════════════════ -->
+<div id="workspace">
+
+  <!-- Left sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Tables</div>
+      <div id="sidebar-tables"></div>
+    </div>
+  </aside>
+
+  <!-- Canvas -->
+  <div id="canvas-wrap">
+
+    <!-- Transform container -->
+    <div id="canvas">
+      <!-- SVG relationship lines (inside canvas transform) -->
+      <svg id="svg-lines" width="6000" height="5000" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none"></svg>
+
+      <!-- FK cursor draw line (inside canvas transform) -->
+      <svg id="fk-cursor-svg" width="6000" height="5000" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none"></svg>
+    </div>
+
+    <!-- Minimap (static overlay) -->
+    <div id="minimap" title="Canvas overview (read-only)">
+      <canvas id="minimap-canvas"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Right properties panel -->
+  <aside id="panel">
+    <div class="panel-section" style="padding:8px 12px 6px">
+      <div class="panel-title">Properties</div>
+    </div>
+    <div id="panel-scroll"></div>
+  </aside>
+
+</div>
+
+<!-- ═══════════════════════ STATUS BAR ═══════════════════════ -->
+<div id="statusbar">
+  <div class="sb-item">
+    <span class="sb-dot"></span>
+    FreeDiagram
+  </div>
+  <div class="sb-item">
+    Tables: <strong id="sb-tables">0</strong>
+  </div>
+  <div class="sb-item">
+    Relationships: <strong id="sb-rels">0</strong>
+  </div>
+  <div class="sb-item">
+    Zoom: <strong id="sb-zoom">100%</strong>
+  </div>
+  <div class="sb-item" style="margin-left:auto">
+    Mode: <span id="sb-mode" style="color:var(--accent)">select</span>
+  </div>
+  <div class="sb-item" style="color:var(--text-dim)">
+    Ctrl+S save · right-click canvas · drag from ● for FK
+  </div>
+</div>
+
+<!-- ═══════════════════════ MODAL ═══════════════════════ -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <h2 class="modal-title" id="modal-title">Export SQL</h2>
+    <textarea class="modal-textarea" id="modal-ta" spellcheck="false"></textarea>
+    <div class="modal-footer">
+      <button class="modal-btn" id="modal-action-btn">Copy</button>
+      <button class="modal-btn" id="modal-close-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CONTEXT MENU ═══════════════════════ -->
+<div id="ctx-menu">
+  <div class="ctx-item" id="ctx-add-here">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Add table here
+  </div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="ctx-delete-table">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4h6v3M3 7h18"/>
+    </svg>
+    Delete table
+  </div>
+</div>
+
+<!-- ═══════════════════════ TOAST ═══════════════════════ -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════ APP SCRIPT ═══════════════════════ -->
+<script src="app.js"></script>
+
+</body>
+</html>
