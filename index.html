@@ -439,6 +439,66 @@
             </div>
         </section>
 
+        <!-- ══════════════════════ TOOLS ══════════════════════ -->
+        <section id="tools" class="mb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="icon-box" style="background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.2)">
+                    <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-display font-bold text-slate-100">Herramientas</h2>
+                    <p class="text-sm text-slate-500">Utilidades interactivas para arquitectos y desarrolladores</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- ── DB Modeler ── -->
+                <a href="utils/dbmodeler/index.html"
+                   class="card rounded-2xl p-6 flex flex-col gap-4 group no-underline data-card"
+                   style="--hover-border:rgba(251,146,60,0.4)"
+                   data-type="tool" data-tags="database schema sql erd modeler diagram"
+                   onmouseenter="this.style.borderColor='rgba(251,146,60,0.4)';this.style.boxShadow='0 12px 40px -12px rgba(251,146,60,0.25)'"
+                   onmouseleave="this.style.borderColor='';this.style.boxShadow=''">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                             style="background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.2)">
+                            🗄️
+                        </div>
+                        <span class="tag tag-iac">Tool</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-100 transition-colors mb-1"
+                            style="" onmouseenter="this.style.color='#fb923c'" onmouseleave="this.style.color=''">
+                            DB Modeler
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Diseñador visual de esquemas de base de datos. Crea tablas, define columnas, agrega FK con drag &amp; drop y exporta SQL DDL o JSON.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap mt-auto pt-2">
+                        <span class="tag tag-iac">SQL Export</span>
+                        <span class="tag" style="background:rgba(251,146,60,0.08);color:#fdba74;border:1px solid rgba(251,146,60,0.2)">ERD</span>
+                        <span class="tag" style="background:rgba(251,146,60,0.08);color:#fdba74;border:1px solid rgba(251,146,60,0.2)">Visual</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-slate-500">
+                        <span>Multi-dialect · Import &amp; Export</span>
+                        <span class="flex items-center gap-1 transition-colors"
+                              onmouseenter="this.style.color='#fb923c'" onmouseleave="this.style.color=''">
+                            Abrir herramienta
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
         <!-- ══════════════════════ HOW TO ADD ══════════════════════ -->
         <section id="about" class="mb-10">
             <div class="section-line mb-12"></div>
