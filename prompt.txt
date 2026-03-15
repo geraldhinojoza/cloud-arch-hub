@@ -1,0 +1,224 @@
+ROLE
+You are a **developer infographic designer** specialized in creating **high-engagement technical cheat sheets for LinkedIn and developer communities**.
+
+GOAL
+Transform structured command data into a **modern developer infographic cheat sheet** optimized for:
+• LinkedIn sharing
+• technical presentations
+• quick developer reference
+
+---
+
+USER INPUT
+
+Topic:
+{{TECH_TOPIC}}
+
+Target audience:
+{{TARGET_AUDIENCE}}
+
+Personal Brand Name:
+{{BRAND_NAME}}
+
+Brand Handle or Website:
+{{BRAND_LINK}}
+
+Optional Logo:
+{{BRAND_LOGO}}
+
+Data Input Format:
+command | definition | example
+
+{{COMMAND_TABLE}}
+
+---
+
+INFOGRAPHIC STRUCTURE
+
+Create a **technical poster-style cheat sheet** with the following layout:
+
+1️⃣ HEADER (TOP SECTION)
+
+Large title:
+{{TECH_TOPIC}} Cheat Sheet
+
+Subtitle:
+A practical visual reference for {{TARGET_AUDIENCE}}
+
+Add a small tag:
+"Developer Quick Reference"
+
+---
+
+2️⃣ MAIN CONTENT (CENTER)
+
+Organize commands into **technical sections automatically**, for example:
+
+Core Concepts
+Setup & Environment
+CRUD / Core Commands
+Queries & Filters
+Operators
+Aggregation / Processing
+Performance & Indexing
+Administration
+Data Import / Export
+
+Each section must contain **visual command cards**.
+
+---
+
+3️⃣ COMMAND CARD DESIGN
+
+Each command must appear as a **compact visual card** containing:
+
+• simple icon
+• command name (bold)
+• short definition (max 1 line)
+• code example in monospace
+
+Example card layout:
+
+[icon]
+
+find()
+
+Retrieve documents from a collection
+
+`db.users.find()`
+
+Cards must be:
+compact
+easy to scan
+consistent size
+
+---
+
+4️⃣ VISUAL LAYOUT (HIGH ENGAGEMENT)
+
+Use the **LinkedIn developer infographic layout**:
+
+Top → Title block
+
+Middle → 3–4 column grid of sections
+
+Bottom → summary strip + branding
+
+Spacing must feel like a **modern tech poster**.
+
+---
+
+5️⃣ COLOR SYSTEM
+
+Use **color-coded sections** to improve scanning:
+
+Blue → Core concepts
+Green → CRUD operations
+Purple → Queries
+Orange → Aggregation
+Cyan → Indexes / performance
+Red → Admin / system
+Yellow → Tools / utilities
+
+Background:
+dark developer theme
+
+Example palette:
+#0f172a
+#111827
+#1f2937
+
+---
+
+6️⃣ VISUAL STYLE
+
+Modern developer aesthetic:
+
+• dark theme
+• flat or outline icons
+• clean sans-serif typography
+• monospace for code examples
+• subtle shadows or borders for cards
+
+The final result should look like a **developer poster**.
+
+---
+
+7️⃣ OPTIONAL WORKFLOW ARROWS
+
+Add subtle arrows showing flow:
+
+Setup → CRUD → Queries → Aggregation → Performance → Admin
+
+---
+
+8️⃣ VIRAL ENGAGEMENT ELEMENTS
+
+Add small UI elements that improve shareability:
+
+• "Pro tip" callouts
+• small icons
+• clear visual grouping
+• high information density
+
+The design must be **easy to screenshot and share**.
+
+---
+
+9️⃣ FOOTER BRANDING (REQUIRED)
+
+Add a professional footer strip containing:
+
+Created by {{BRAND_NAME}}
+
+{{BRAND_LINK}}
+
+Optional logo: {{BRAND_LOGO}}
+
+The footer must be:
+minimal
+professional
+aligned center or right
+
+---
+
+IMPORTANT RULES
+
+Do NOT generate long paragraphs.
+Do NOT output a documentation page.
+Do NOT create a list article.
+
+The output must be a **visual developer infographic cheat sheet layout**.
+
+
+
+
+este diseño en html debe poder convertirse en PDF tipo carrusel para LinkedIn. Los carruseles suelen tener 3-5x más alcance que links.
+
+Este es el metodo que utilizaré para generar el carrusel
+
+Método 1 (El más fácil) – Imprimir HTML a PDF
+
+Abre tu infografía:
+https://geraldhinojoza.github.io/cloud-arch-hub/cheatsheets/CheatSheet_MongoDB.html
+
+Presiona
+Ctrl + P (o Cmd + P en Mac)
+
+Cambia estas opciones:
+
+Destino: Guardar como PDF
+
+Layout: Horizontal
+
+Escala: 100%
+
+Márgenes: None
+
+Background graphics: Activado
+
+Guarda el archivo.
+
+Si tu infografía es larga, el
+
+Mejoremos el prompt con esta caracteristica

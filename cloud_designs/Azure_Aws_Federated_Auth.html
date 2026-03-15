@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Cloud Banking Data Platform PoC | Gerald Hinojoza</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #818cf8;
+            --accent-green: #34d399;
+            --aws-color: #ff9900;
+            --azure-color: #0078d4;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+
+        .brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .brand a:hover {
+            text-decoration: underline;
+        }
+
+        .env-tags span {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tag-dev { background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .tag-region { background: rgba(129, 140, 248, 0.2); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+
+        .slide-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            transform: translateY(20px);
+            pointer-events: none;
+            padding: 2rem 4rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        h1, h2 {
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            border-bottom: 2px solid var(--bg-panel);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-main);
+        }
+
+        /* Controls */
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+            background: var(--bg-panel);
+            padding: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        button {
+            background: none;
+            border: 1px solid var(--text-muted);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--text-main);
+            color: var(--bg-dark);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+
+        /* Slide 1: Cover */
+        .cover-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cover-title {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .cover-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+        }
+
+        /* Slide 2: Architecture Diagram */
+        .arch-diagram-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Slide 3: Flow */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .flow-card {
+            background: var(--bg-panel);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-blue);
+            transition: transform 0.2s;
+        }
+
+        .flow-card:hover {
+            transform: translateX(5px);
+        }
+
+        .flow-card.aws { border-left-color: var(--aws-color); }
+        .flow-card.azure { border-left-color: var(--azure-color); }
+        .flow-card.sec { border-left-color: var(--accent-green); }
+
+        .flow-step {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Slide 4: Terraform */
+        .code-container {
+            flex: 1;
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #c9d1d9;
+        }
+
+        .tf-keyword { color: #ff7b72; }
+        .tf-string { color: #a5d6ff; }
+        .tf-type { color: #79c0ff; }
+        .tf-comment { color: #8b949e; font-style: italic; }
+
+        /* Slide 5: Costs */
+        .cost-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-panel);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cost-table th, .cost-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .cost-table th {
+            background: rgba(0,0,0,0.2);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .cost-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cost-total {
+            background: rgba(56, 189, 248, 0.1);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Slide 6: Validation */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .check-group {
+            background: var(--bg-panel);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .check-group h3 {
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+        }
+
+        .check-item input {
+            margin-top: 0.25rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+            accent-color: var(--accent-green);
+        }
+
+        .check-item span {
+            color: var(--text-main);
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            Gerald Hinojoza 
+            <a href="https://www.linkedin.com/in/geraldhinojoza/" target="_blank">linkedin.com/in/geraldhinojoza/</a>
+        </div>
+        <div class="env-tags">
+            <span class="tag-dev">Env: dev</span>
+            <span class="tag-region">Region: centralus</span>
+        </div>
+    </header>
+
+    <div class="slide-container" id="slide-container">
+
+        <!-- SLIDE 1: Cover -->
+        <div class="slide active">
+            <div class="cover-content">
+                <h1 class="cover-title">Multi-Cloud Banking Data Platform</h1>
+                <p class="cover-subtitle">Secure AWS to Azure Data Pipeline via Workload Identity Federation (OIDC)</p>
+                <div style="margin-top: 2rem; color: var(--text-muted); text-align: center;">
+                    <p><strong>Sector:</strong> Banking / Financial Services</p>
+                    <p><strong>Architecture Style:</strong> Event-Driven Multi-Cloud (AWS + Azure)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Architecture Diagram -->
+        <div class="slide">
+            <h2 class="slide-title">Architecture Diagram (Spatial)</h2>
+            <div class="arch-diagram-wrapper">
+                <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Gradients -->
+                        <linearGradient id="awsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#232f3e" />
+                            <stop offset="100%" stop-color="#1a222d" />
+                        </linearGradient>
+                        <linearGradient id="azureGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#002050" />
+                            <stop offset="100%" stop-color="#001433" />
+                        </linearGradient>
+                        
+                        <!-- Arrow heads -->
+                        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+                        </marker>
+                        <marker id="arrow-auth" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399" />
+                        </marker>
+
+                        <!-- Icons base -->
+                        <g id="icon-db">
+                            <path d="M10,10 C10,4 30,4 30,10 C30,16 10,16 10,10 Z M10,10 L10,30 C10,36 30,36 30,30 L30,10" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M10,20 C10,26 30,26 30,20" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </g>
+                        <g id="icon-storage">
+                            <rect x="5" y="10" width="30" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="5" y1="18" x2="35" y2="18" stroke="currentColor" stroke-width="2"/>
+                        </g>
+                        <g id="icon-func">
+                            <path d="M25,5 L15,20 L22,20 L15,35 L28,18 L20,18 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </g>
+                    </defs>
+
+                    <!-- Swimlanes -->
+                    <!-- AWS -->
+                    <rect x="20" y="50" width="220" height="500" rx="10" fill="url(#awsGrad)" stroke="#ff9900" stroke-width="2" />
+                    <text x="130" y="80" fill="#ff9900" font-size="18" font-weight="bold" text-anchor="middle">AWS Region</text>
+                    
+                    <!-- Azure -->
+                    <rect x="280" y="50" width="680" height="500" rx="10" fill="url(#azureGrad)" stroke="#0078d4" stroke-width="2" />
+                    <text x="620" y="80" fill="#0078d4" font-size="18" font-weight="bold" text-anchor="middle">Azure Region (centralus)</text>
+
+                    <!-- AWS Nodes -->
+                    <!-- S3 -->
+                    <g transform="translate(80, 150)">
+                        <rect x="0" y="0" width="100" height="60" rx="5" fill="#1e293b" stroke="#ff9900" stroke-width="1.5" />
+                        <use href="#icon-storage" x="30" y="5" stroke="#ff9900" />
+                        <text x="50" y="45" fill="#f8fafc" font-size="12" text-anchor="middle">S3 Bucket</text>
+                        <text x="50" y="55" fill="#94a3b8" font-size="9" text-anchor="middle">(Landing Zone)</text>
+                    </g>
+                    
+                    <!-- IAM -->
+                    <g transform="translate(80, 350)">
+                        <rect x="0" y="0" width="100" height="60" rx="5" fill="#1e293b" stroke="#ff9900" stroke-width="1.5" />
+                        <circle cx="50" cy="20" r="10" fill="none" stroke="#ff9900" stroke-width="2"/>
+                        <line x1="50" y1="30" x2="50" y2="40" stroke="#ff9900" stroke-width="2"/>
+                        <text x="50" y="50" fill="#f8fafc" font-size="12" text-anchor="middle">IAM Role</text>
+                    </g>
+
+                    <!-- Azure Nodes -->
+                    <!-- ADF -->
+                    <g transform="translate(320, 150)">
+                        <rect x="0" y="0" width="120" height="60" rx="5" fill="#1e293b" stroke="#0078d4" stroke-width="1.5" />
+                        <circle cx="60" cy="20" r="12" fill="none" stroke="#0078d4" stroke-width="2"/>
+                        <path d="M55,20 L65,20 M60,15 L60,25" stroke="#0078d4" stroke-width="2"/>
+                        <text x="60" y="45" fill="#f8fafc" font-size="12" text-anchor="middle">Azure Data Factory</text>
+                        <text x="60" y="55" fill="#34d399" font-size="9" text-anchor="middle">(Managed Identity)</text>
+                    </g>
+
+                    <!-- Blob Storage -->
+                    <g transform="translate(520, 150)">
+                        <rect x="0" y="0" width="100" height="60" rx="5" fill="#1e293b" stroke="#0078d4" stroke-width="1.5" />
+                        <use href="#icon-storage" x="30" y="5" stroke="#0078d4" />
+                        <text x="50" y="45" fill="#f8fafc" font-size="12" text-anchor="middle">Blob Storage</text>
+                        <text x="50" y="55" fill="#94a3b8" font-size="9" text-anchor="middle">(Raw Zone)</text>
+                    </g>
+
+                    <!-- Event Grid -->
+                    <g transform="translate(680, 100)">
+                        <rect x="0" y="0" width="90" height="50" rx="5" fill="#1e293b" stroke="#0078d4" stroke-width="1.5" />
+                        <text x="45" y="30" fill="#f8fafc" font-size="12" text-anchor="middle">Event Grid</text>
+                    </g>
+
+                    <!-- Azure Functions -->
+                    <g transform="translate(820, 100)">
+                        <rect x="0" y="0" width="100" height="50" rx="5" fill="#1e293b" stroke="#0078d4" stroke-width="1.5" />
+                        <use href="#icon-func" x="30" y="0" stroke="#0078d4" />
+                        <text x="50" y="40" fill="#f8fafc" font-size="12" text-anchor="middle">Function App</text>
+                    </g>
+
+                    <!-- Databricks -->
+                    <g transform="translate(520, 300)">
+                        <rect x="0" y="0" width="120" height="60" rx="5" fill="#1e293b" stroke="#ff3621" stroke-width="1.5" />
+                        <path d="M40,25 L60,15 L80,25 L60,35 Z" fill="none" stroke="#ff3621" stroke-width="2"/>
+                        <text x="60" y="50" fill="#f8fafc" font-size="12" text-anchor="middle">Azure Databricks</text>
+                    </g>
+
+                    <!-- Cosmos DB -->
+                    <g transform="translate(760, 300)">
+                        <rect x="0" y="0" width="100" height="60" rx="5" fill="#1e293b" stroke="#0078d4" stroke-width="1.5" />
+                        <use href="#icon-db" x="30" y="0" stroke="#0078d4" />
+                        <text x="50" y="45" fill="#f8fafc" font-size="12" text-anchor="middle">Cosmos DB</text>
+                        <text x="50" y="55" fill="#94a3b8" font-size="9" text-anchor="middle">(Serving Layer)</text>
+                    </g>
+
+                    <!-- Power BI -->
+                    <g transform="translate(760, 450)">
+                        <rect x="0" y="0" width="100" height="50" rx="5" fill="#1e293b" stroke="#f2c811" stroke-width="1.5" />
+                        <rect x="35" y="15" width="8" height="15" fill="#f2c811"/>
+                        <rect x="47" y="10" width="8" height="20" fill="#f2c811"/>
+                        <rect x="59" y="20" width="8" height="10" fill="#f2c811"/>
+                        <text x="50" y="40" fill="#f8fafc" font-size="12" text-anchor="middle">Power BI</text>
+                    </g>
+
+                    <!-- Azure Monitor -->
+                    <g transform="translate(320, 450)">
+                        <rect x="0" y="0" width="220" height="50" rx="5" fill="#1e293b" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4" />
+                        <text x="110" y="30" fill="#f8fafc" font-size="14" text-anchor="middle">Azure Monitor / Log Analytics</text>
+                    </g>
+
+                    <!-- Connections -->
+                    <!-- S3 to ADF -->
+                    <path d="M 180 180 L 310 180" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+                    <text x="250" y="170" fill="#94a3b8" font-size="10" text-anchor="middle">Data Copy</text>
+
+                    <!-- OIDC IAM to ADF -->
+                    <path d="M 180 380 L 250 380 L 250 200 L 310 200" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow-auth)" />
+                    <text x="210" y="290" fill="#34d399" font-size="10" text-anchor="middle" transform="rotate(-90 210,290)">OIDC Trust</text>
+
+                    <!-- ADF to Blob -->
+                    <path d="M 440 180 L 510 180" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+
+                    <!-- Blob to Event Grid -->
+                    <path d="M 570 150 L 570 125 L 670 125" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+                    
+                    <!-- Event Grid to Function -->
+                    <path d="M 770 125 L 810 125" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+                    
+                    <!-- Function to Databricks -->
+                    <path d="M 870 150 L 870 200 L 580 200 L 580 290" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+                    <text x="730" y="190" fill="#94a3b8" font-size="10" text-anchor="middle">Trigger ETL (API)</text>
+
+                    <!-- Databricks to Cosmos -->
+                    <path d="M 640 330 L 750 330" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+                    <text x="695" y="320" fill="#94a3b8" font-size="10" text-anchor="middle">Spark Write</text>
+
+                    <!-- Cosmos to Power BI -->
+                    <path d="M 810 360 L 810 440" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)" />
+                    <text x="820" y="405" fill="#94a3b8" font-size="10" text-anchor="start">DirectQuery</text>
+
+                    <!-- Monitor links -->
+                    <path d="M 380 210 L 380 440" fill="none" stroke="#818cf8" stroke-width="1" stroke-dasharray="2,2" />
+                    <path d="M 580 360 L 580 475 L 550 475" fill="none" stroke="#818cf8" stroke-width="1" stroke-dasharray="2,2" />
+                    
+                </svg>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Data Flow -->
+        <div class="slide">
+            <h2 class="slide-title">Data Flow Sequence</h2>
+            <div class="flow-grid">
+                <div class="flow-card aws">
+                    <div class="flow-step">Step 1 • AWS S3</div>
+                    <h3>File Ingestion</h3>
+                    <p>Bank transaction logs (CSV/JSON) are pushed to the AWS S3 landing bucket from external mainframe systems.</p>
+                </div>
+                <div class="flow-card sec">
+                    <div class="flow-step">Step 2 • IAM & OIDC</div>
+                    <h3>Secretless Auth</h3>
+                    <p>Azure Data Factory assumes an AWS IAM role via Workload Identity Federation (OIDC). No long-lived access keys are stored.</p>
+                </div>
+                <div class="flow-card azure">
+                    <div class="flow-step">Step 3 • Azure Data Factory</div>
+                    <h3>Cross-Cloud Copy</h3>
+                    <p>ADF Pipeline copies the delta files from AWS S3 into Azure Blob Storage (Raw Zone).</p>
+                </div>
+                <div class="flow-card azure">
+                    <div class="flow-step">Step 4 • Event Grid & Functions</div>
+                    <h3>Event-Driven Trigger</h3>
+                    <p>Blob creation fires an Event Grid event to an Azure Function, which performs lightweight schema validation and triggers Databricks.</p>
+                </div>
+                <div class="flow-card azure">
+                    <div class="flow-step">Step 5 • Azure Databricks</div>
+                    <h3>ETL & Fraud Detection</h3>
+                    <p>Databricks mounts Blob, cleanses data, runs ML-based fraud detection models, and structures the output.</p>
+                </div>
+                <div class="flow-card azure">
+                    <div class="flow-step">Step 6 • Cosmos DB</div>
+                    <h3>Serving Layer</h3>
+                    <p>Cleaned, scored transactions are upserted into Azure Cosmos DB (NoSQL API) for high-concurrency, low-latency querying.</p>
+                </div>
+                <div class="flow-card azure">
+                    <div class="flow-step">Step 7 • Power BI</div>
+                    <h3>Visualization</h3>
+                    <p>Power BI connects to Cosmos DB to provide real-time dashboards for the bank's fraud analytics team.</p>
+                </div>
+                <div class="flow-card sec">
+                    <div class="flow-step">Step 8 • Azure Monitor</div>
+                    <h3>Governance & Logging</h3>
+                    <p>All component logs, pipeline metrics, and security events are centralized in Log Analytics.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Terraform HCL -->
+        <div class="slide">
+            <h2 class="slide-title">Infrastructure as Code (Terraform)</h2>
+            <div class="code-container" id="tf-code">
+<pre><code><span class="tf-comment"># AWS Provider & S3 Landing Zone</span>
+<span class="tf-keyword">resource</span> <span class="tf-string">"aws_s3_bucket"</span> <span class="tf-type">"banking_landing"</span> {
+  bucket = <span class="tf-string">"gh-bank-landing-dev-centralus"</span>
+}
+
+<span class="tf-comment"># AWS IAM Role for OIDC (Azure AD / Entra ID Trust)</span>
+<span class="tf-keyword">resource</span> <span class="tf-string">"aws_iam_role"</span> <span class="tf-type">"azure_adf_role"</span> {
+  name = <span class="tf-string">"AzureADFAccessRole"</span>
+  assume_role_policy = jsonencode({
+    Version = <span class="tf-string">"2012-10-17"</span>
+    Statement = [{
+      Action = <span class="tf-string">"sts:AssumeRoleWithWebIdentity"</span>
+      Effect = <span class="tf-string">"Allow"</span>
+      Principal = {
+        Federated = <span class="tf-string">"arn:aws:iam::123456789012:oidc-provider/login.microsoftonline.com/TENANT_ID/v2.0"</span>
+      }
+      Condition = {
+        StringEquals = {
+          <span class="tf-string">"login.microsoftonline.com/TENANT_ID/v2.0:sub"</span> = <span class="tf-string">"api://AzureADFAppID"</span>
+        }
+      }
+    }]
+  })
+}
+
+<span class="tf-comment"># Azure Resource Group & Storage</span>
+<span class="tf-keyword">resource</span> <span class="tf-string">"azurerm_resource_group"</span> <span class="tf-type">"rg"</span> {
+  name     = <span class="tf-string">"rg-banking-poc-dev-centralus"</span>
+  location = <span class="tf-string">"Central US"</span>
+}
+
+<span class="tf-keyword">resource</span> <span class="tf-string">"azurerm_storage_account"</span> <span class="tf-type">"raw"</span> {
+  name                     = <span class="tf-string">"stbankrawdevcentralus"</span>
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = <span class="tf-string">"Standard"</span>
+  account_replication_type = <span class="tf-string">"LRS"</span>
+  is_hns_enabled           = true
+}
+
+<span class="tf-comment"># Azure Data Factory & Managed Identity</span>
+<span class="tf-keyword">resource</span> <span class="tf-string">"azurerm_user_assigned_identity"</span> <span class="tf-type">"adf_mi"</span> {
+  name                = <span class="tf-string">"mi-adf-banking-dev"</span>
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+}
+
+<span class="tf-keyword">resource</span> <span class="tf-string">"azurerm_federated_identity_credential"</span> <span class="tf-type">"aws_trust"</span> {
+  name                = <span class="tf-string">"fic-aws-trust"</span>
+  resource_group_name = azurerm_resource_group.rg.name
+  audience            = [<span class="tf-string">"api://AzureADFAppID"</span>]
+  issuer              = <span class="tf-string">"https://login.microsoftonline.com/TENANT_ID/v2.0"</span>
+  parent_id           = azurerm_user_assigned_identity.adf_mi.id
+  subject             = <span class="tf-string">"system:serviceaccount:default:adf-sa"</span>
+}
+
+<span class="tf-keyword">resource</span> <span class="tf-string">"azurerm_cosmosdb_account"</span> <span class="tf-type">"cosmos"</span> {
+  name                = <span class="tf-string">"cosmos-banking-dev-centralus"</span>
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  offer_type          = <span class="tf-string">"Standard"</span>
+  kind                = <span class="tf-string">"GlobalDocumentDB"</span>
+
+  capabilities {
+    name = <span class="tf-string">"EnableServerless"</span>
+  }
+
+  consistency_policy {
+    consistency_level = <span class="tf-string">"Session"</span>
+  }
+  
+  geo_location {
+    location          = azurerm_resource_group.rg.location
+    failover_priority = 0
+  }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Costs -->
+        <div class="slide">
+            <h2 class="slide-title">Cost Estimation (Monthly)</h2>
+            <p style="margin-bottom: 1rem; color: var(--text-muted);">Environment: <strong>dev</strong> | Region: <strong>centralus</strong> | Workload: ~10GB Data/mo, 100k requests.</p>
+            <table class="cost-table">
+                <thead>
+                    <tr>
+                        <th>Cloud Component</th>
+                        <th>SKU / Tier (Dev)</th>
+                        <th>Estimated Cost (USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AWS S3 Bucket</td>
+                        <td>Standard (10 GB) + API calls</td>
+                        <td>$ 0.50</td>
+                    </tr>
+                    <tr>
+                        <td>AWS IAM</td>
+                        <td>Global / Free</td>
+                        <td>$ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Data Factory</td>
+                        <td>Data Pipeline (DIU) - Scheduled runs</td>
+                        <td>$ 15.00</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Blob Storage (ADLS Gen2)</td>
+                        <td>Standard LRS (10 GB)</td>
+                        <td>$ 0.40</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Event Grid & Functions</td>
+                        <td>Consumption Tier (Free grant applies)</td>
+                        <td>$ 0.50</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Databricks</td>
+                        <td>Compute (Dev clusters, auto-terminate)</td>
+                        <td>$ 60.00</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Cosmos DB</td>
+                        <td>Serverless (Pay per RU)</td>
+                        <td>$ 5.00</td>
+                    </tr>
+                    <tr>
+                        <td>Azure Monitor / Log Analytics</td>
+                        <td>Pay-As-You-Go (Data Ingestion ~5GB)</td>
+                        <td>$ 14.00</td>
+                    </tr>
+                    <tr class="cost-total">
+                        <td colspan="2">Total Estimated Monthly Cost (Dev Environment)</td>
+                        <td>$ 95.40</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SLIDE 6: Validation -->
+        <div class="slide">
+            <h2 class="slide-title">PoC Validation Checklist</h2>
+            <div class="checklist">
+                
+                <div class="check-group">
+                    <h3>1. Security & Authentication (OIDC)</h3>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>AWS IAM Trust:</strong> Verify AWS IAM Role trusts the Azure Entra ID OpenID Connect (OIDC) provider.</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>Secretless Access:</strong> Confirm ADF can list/read from AWS S3 without Access Keys stored in Azure Key Vault.</span>
+                    </label>
+                </div>
+
+                <div class="check-group">
+                    <h3>2. Data Ingestion & Connectivity</h3>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>Cross-Cloud Copy:</strong> Trigger ADF pipeline manually to confirm S3 to Blob generic file transfer succeeds.</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>Event Grid Wiring:</strong> Upload a file directly to ADLS Gen2 and verify Azure Function executes immediately.</span>
+                    </label>
+                </div>
+
+                <div class="check-group">
+                    <h3>3. Transformation & Serving</h3>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>Databricks Execution:</strong> Validate that the Notebook cleanses anomalies and correctly computes fraud risk scores.</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>Cosmos DB Upsert:</strong> Query Cosmos DB Data Explorer to ensure JSON documents match the expected Output Schema.</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox">
+                        <span><strong>Power BI DirectQuery:</strong> Refresh Power BI dashboard to reflect newly processed data without latency.</span>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button id="btn-prev" onclick="changeSlide(-1)" disabled>← Prev</button>
+        <div class="progress-indicator" id="progress">1 / 6</div>
+        <button id="btn-next" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progress = document.getElementById('progress');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+
+        function updateUI() {
+            slides.forEach((s, i) => {
+                if(i === currentSlide) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+
+            progress.innerText = `${currentSlide + 1} / ${slides.length}`;
+            btnPrev.disabled = currentSlide === 0;
+            btnNext.disabled = currentSlide === slides.length - 1;
+        }
+
+        function changeSlide(dir) {
+            currentSlide += dir;
+            if(currentSlide < 0) currentSlide = 0;
+            if(currentSlide >= slides.length) currentSlide = slides.length - 1;
+            updateUI();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight' || e.key === 'Space') {
+                if(currentSlide < slides.length - 1) changeSlide(1);
+            } else if(e.key === 'ArrowLeft') {
+                if(currentSlide > 0) changeSlide(-1);
+            }
+        });
+
+        updateUI();
+    </script>
+
+    <!--
+    ========================================================
+    MANDATORY SELF-CHECK GATE:
+    1. Are AWS and Azure both represented? YES
+    2. Is the environment 'dev' and region 'centralus' used? YES
+    3. Are embedded SVGs included? YES
+    4. Are there 6 exact slides? YES
+    5. Is OIDC / Workload Identity Federation highlighted? YES
+    6. Complete, non-truncated HTML? YES
+
+    EXPORT INSTRUCTIONS:
+    - Save this exact text block as `multi-cloud-banking-poc.html`.
+    - Open in any modern web browser.
+    - Use the bottom-right navigation buttons or keyboard arrows to change slides.
+    ========================================================
+    -->
+</body>
+</html>

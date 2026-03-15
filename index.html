@@ -385,6 +385,40 @@
 
             <div id="designs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
+                <!-- ── Azure ↔ AWS Federated Auth ── -->
+                <a href="cloud_designs/Azure_Aws_Federated_Auth.html"
+                   class="card card-design rounded-2xl p-6 flex flex-col gap-4 group no-underline data-card"
+                   data-type="design" data-tags="azure aws oidc federated auth multicloud identity">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-2xl">
+                            🔐
+                        </div>
+                        <span class="tag tag-multi">Multinube</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-100 group-hover:text-indigo-400 transition-colors mb-1">
+                            Azure ↔ AWS Federated Auth
+                        </h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Arquitectura de autenticación federada entre Azure y AWS mediante OIDC. Incluye diagrama interactivo y guía completa para replicar la PoC.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap mt-auto pt-2">
+                        <span class="tag tag-azure">Azure AD</span>
+                        <span class="tag tag-iac" style="background:rgba(255,153,0,0.1);color:#ffb84d;border:1px solid rgba(255,153,0,0.25)">AWS IAM</span>
+                        <span class="tag tag-multi">OIDC</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-slate-500">
+                        <span>PoC · Banking Data Platform</span>
+                        <span class="flex items-center gap-1 group-hover:text-indigo-400 transition-colors">
+                            Ver diseño
+                            <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
                 <!-- ── Placeholder cards ── -->
                 <div class="card card-design rounded-2xl p-6 flex flex-col items-center justify-center gap-3 border-dashed border-white/10 opacity-40 cursor-default min-h-[220px]">
                     <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,0 +1,120 @@
+prompt 
+
+bigsheet 100 commands for mongodb, example of use and defininition for example command|definition|example show dbs | Lists all databases in the MongoDB server. | show dbs
+
+
+command | definition | example
+show dbs | Lists all databases in the MongoDB server | show dbs
+use <db> | Switches to or creates a database | use shopDB
+db | Shows the current database | db
+db.stats() | Displays statistics about the current database | db.stats()
+db.dropDatabase() | Deletes the current database | db.dropDatabase()
+db.version() | Shows MongoDB server version | db.version()
+db.serverStatus() | Shows MongoDB server status information | db.serverStatus()
+show collections | Lists all collections in the current database | show collections
+db.createCollection() | Creates a new collection | db.createCollection("users")
+db.getCollectionNames() | Lists collection names in the database | db.getCollectionNames()
+
+insertOne() | Inserts a single document | db.users.insertOne({name:"John",age:25})
+insertMany() | Inserts multiple documents | db.users.insertMany([{name:"Ana"},{name:"Mike"}])
+insert() | Legacy insert command | db.users.insert({name:"OldUser"})
+save() | Inserts or updates a document | db.users.save({name:"David"})
+bulkWrite() | Performs multiple write operations | db.users.bulkWrite([{insertOne:{document:{name:"A"}}}])
+
+find() | Retrieves documents from a collection | db.users.find()
+findOne() | Returns one matching document | db.users.findOne({name:"John"})
+pretty() | Formats query output for readability | db.users.find().pretty()
+count() | Counts documents in a collection | db.users.count()
+countDocuments() | Counts documents matching a filter | db.users.countDocuments({age:{$gt:18}})
+estimatedDocumentCount() | Estimates total documents in collection | db.users.estimatedDocumentCount()
+distinct() | Returns distinct values of a field | db.users.distinct("city")
+
+limit() | Limits number of results returned | db.users.find().limit(5)
+skip() | Skips a number of results | db.users.find().skip(10)
+sort() | Sorts results ascending or descending | db.users.find().sort({age:1})
+explain() | Shows query execution plan | db.users.find({age:25}).explain()
+
+$gt | Greater than comparison operator | db.users.find({age:{$gt:18}})
+$lt | Less than comparison operator | db.users.find({age:{$lt:30}})
+$gte | Greater than or equal comparison | db.users.find({age:{$gte:21}})
+$lte | Less than or equal comparison | db.users.find({age:{$lte:65}})
+$ne | Not equal operator | db.users.find({age:{$ne:25}})
+$in | Matches any value in array | db.users.find({age:{$in:[20,25,30]}})
+$nin | Matches values not in array | db.users.find({age:{$nin:[18,19]}})
+
+$and | Logical AND operator | db.users.find({$and:[{age:{$gt:18}},{age:{$lt:30}}]})
+$or | Logical OR operator | db.users.find({$or:[{age:20},{age:30}]})
+$not | Logical NOT operator | db.users.find({age:{$not:{$gt:30}}})
+$nor | Returns documents failing all conditions | db.users.find({$nor:[{age:20},{name:"John"}]})
+
+updateOne() | Updates a single document | db.users.updateOne({name:"John"},{$set:{age:26}})
+updateMany() | Updates multiple documents | db.users.updateMany({age:{$lt:18}},{$set:{minor:true}})
+replaceOne() | Replaces an entire document | db.users.replaceOne({name:"John"},{name:"John",age:35})
+
+$set | Sets a field value | db.users.updateOne({name:"John"},{$set:{city:"NY"}})
+$unset | Removes a field | db.users.updateOne({name:"John"},{$unset:{phone:""}})
+$inc | Increments a numeric value | db.users.updateOne({name:"John"},{$inc:{age:1}})
+$mul | Multiplies numeric value | db.products.updateOne({name:"Laptop"},{$mul:{price:1.1}})
+$rename | Renames a field | db.users.updateOne({},{$rename:{username:"user_name"}})
+$min | Updates field if value is smaller | db.users.updateOne({name:"John"},{$min:{age:20}})
+$max | Updates field if value is larger | db.users.updateOne({name:"John"},{$max:{age:40}})
+$currentDate | Sets field to current date | db.users.updateOne({},{$currentDate:{lastLogin:true}})
+$setOnInsert | Sets value only during insert | db.users.updateOne({name:"A"},{$setOnInsert:{age:20}},{upsert:true})
+
+deleteOne() | Deletes one document | db.users.deleteOne({name:"John"})
+deleteMany() | Deletes multiple documents | db.users.deleteMany({age:{$lt:18}})
+remove() | Legacy delete command | db.users.remove({name:"OldUser"})
+
+createIndex() | Creates an index | db.users.createIndex({name:1})
+getIndexes() | Lists indexes in a collection | db.users.getIndexes()
+dropIndex() | Removes a specific index | db.users.dropIndex("name_1")
+dropIndexes() | Removes all indexes | db.users.dropIndexes()
+reIndex() | Rebuilds indexes | db.users.reIndex()
+
+aggregate() | Runs aggregation pipeline | db.orders.aggregate([{$match:{status:"A"}}])
+$match | Filters documents in aggregation | {$match:{status:"A"}}
+$group | Groups documents | {$group:{_id:"$cust_id",total:{$sum:"$amount"}}}
+$project | Selects fields | {$project:{name:1,age:1}}
+$sort | Sorts aggregation results | {$sort:{amount:-1}}
+$limit | Limits aggregation results | {$limit:5}
+$skip | Skips aggregation results | {$skip:10}
+$lookup | Joins collections | {$lookup:{from:"orders",localField:"_id",foreignField:"user_id",as:"orders"}}
+$unwind | Splits array elements | {$unwind:"$items"}
+$count | Counts documents in aggregation | {$count:"total"}
+
+$all | Matches all array elements | db.users.find({tags:{$all:["mongodb","node"]}})
+$size | Matches array size | db.users.find({tags:{$size:2}})
+$elemMatch | Matches array elements meeting condition | db.users.find({scores:{$elemMatch:{score:{$gt:80}}}})
+
+$push | Adds value to array | db.users.updateOne({},{$push:{tags:"mongodb"}})
+$pull | Removes value from array | db.users.updateOne({},{$pull:{tags:"old"}})
+$addToSet | Adds value only if not present | db.users.updateOne({},{$addToSet:{tags:"nodejs"}})
+
+createIndex({field:"text"}) | Creates text index for search | db.posts.createIndex({content:"text"})
+$text | Performs text search | db.posts.find({$text:{$search:"mongodb"}})
+
+runCommand() | Runs database command | db.runCommand({ping:1})
+currentOp() | Shows current database operations | db.currentOp()
+killOp() | Stops running operation | db.killOp(12345)
+setProfilingLevel() | Sets database profiling level | db.setProfilingLevel(2)
+getProfilingStatus() | Gets profiling status | db.getProfilingStatus()
+
+db.collection.stats() | Shows collection statistics | db.users.stats()
+renameCollection() | Renames a collection | db.users.renameCollection("customers")
+isCapped() | Checks if collection is capped | db.logs.isCapped()
+convertToCapped() | Converts collection to capped | db.logs.convertToCapped({size:100000})
+dataSize() | Shows size of data in collection | db.users.dataSize()
+storageSize() | Shows storage size | db.users.storageSize()
+
+watch() | Watches changes in collection | db.users.watch()
+
+mongodump | Creates database backup | mongodump --db shopDB
+mongorestore | Restores database backup | mongorestore dump/
+mongoexport | Exports collection data | mongoexport --collection users --out users.json
+mongoimport | Imports data into collection | mongoimport --collection users --file users.json
+
+db.adminCommand() | Runs admin command | db.adminCommand({listDatabases:1})
+db.hostInfo() | Shows host system information | db.hostInfo()
+db.shutdownServer() | Stops MongoDB server | db.shutdownServer()
+fsyncLock | Locks database for backup | db.fsyncLock()
+fsyncUnlock | Unlocks database | db.fsyncUnlock()
