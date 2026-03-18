@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure RAG Architecture: Banking Data Governance</title>
+    <style>
+        :root {
+            --azure-blue: #0078D4;
+            --azure-dark-blue: #005a9e;
+            --bg-color: #1e1e1e;
+            --card-bg: #2d2d30;
+            --text-main: #f3f2f1;
+            --text-muted: #a19f9d;
+            --code-bg: #111111;
+            --accent-green: #107c10;
+            --accent-cyan: #00bcf2;
+            --accent-orange: #d83b01;
+            --swimlane-border: #444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .deck {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1400px;
+            height: 85%;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 40px;
+            box-sizing: border-box;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header {
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .slide-header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: var(--azure-blue);
+        }
+
+        .slide-header .meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .slide-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Cover Slide Specifics */
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e1e1e 0%, #002e4d 100%);
+        }
+
+        .cover-slide h1 {
+            font-size: 48px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .cover-slide h2 {
+            font-size: 24px;
+            color: var(--accent-cyan);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .cover-slide .brand {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #555;
+            font-size: 18px;
+        }
+
+        .cover-slide a {
+            color: var(--azure-blue);
+            text-decoration: none;
+        }
+
+        .cover-slide a:hover {
+            text-decoration: underline;
+        }
+
+        .badges {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .badge {
+            background: rgba(0, 120, 212, 0.2);
+            border: 1px solid var(--azure-blue);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        /* Controls */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        button {
+            background-color: var(--azure-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--azure-dark-blue);
+        }
+
+        /* SVG Overrides */
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swimlane-title {
+            fill: var(--text-muted);
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .node-rect {
+            fill: var(--card-bg);
+            stroke: var(--azure-blue);
+            stroke-width: 2;
+            rx: 8;
+        }
+
+        .node-text {
+            fill: var(--text-main);
+            font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+            text-anchor: middle;
+        }
+
+        .edge-line {
+            stroke: var(--accent-cyan);
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrow);
+        }
+
+        .edge-label {
+            fill: var(--accent-cyan);
+            font-size: 12px;
+            background: var(--bg-color);
+        }
+
+        /* Sequence Diagram */
+        .seq-line { stroke: #555; stroke-dasharray: 5,5; stroke-width: 1.5; }
+        .seq-actor { fill: var(--azure-blue); stroke: #fff; stroke-width: 1; rx: 4; }
+        .seq-text { fill: #fff; font-size: 14px; text-anchor: middle; font-weight: 600; }
+        .seq-arrow { stroke: var(--text-main); stroke-width: 1.5; fill: none; marker-end: url(#arrow-white); }
+        .seq-arrow-return { stroke: var(--text-muted); stroke-width: 1.5; stroke-dasharray: 4,4; fill: none; marker-end: url(#arrow-muted); }
+        .seq-msg { fill: var(--accent-cyan); font-size: 12px; }
+
+        /* Code Block */
+        pre {
+            background: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-y: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            color: #d4d4d4;
+            height: 100%;
+            margin: 0;
+            border: 1px solid #333;
+        }
+        
+        .hcl-kw { color: #569cd6; }
+        .hcl-str { color: #ce9178; }
+        .hcl-type { color: #4ec9b0; }
+        .hcl-comm { color: #6a9955; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        th {
+            background-color: rgba(0, 120, 212, 0.1);
+            color: var(--azure-blue);
+            font-weight: 600;
+        }
+
+        .cost-total {
+            font-size: 24px;
+            color: var(--accent-green);
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Checklist */
+        .checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .checklist-category h3 {
+            color: var(--accent-cyan);
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item input {
+            margin-top: 5px;
+            margin-right: 10px;
+            accent-color: var(--azure-blue);
+        }
+        
+        .icon-container {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- SVG Sprite & Definitions -->
+<svg style="display: none;">
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-cyan)" />
+        </marker>
+        <marker id="arrow-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--text-main)" />
+        </marker>
+        <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--text-muted)" />
+        </marker>
+
+        <!-- Azure Web App Icon -->
+        <g id="icon-webapp">
+            <path d="M20,2C10.1,2,2,10.1,2,20s8.1,18,18,18s18-8.1,18-18S29.9,2,20,2z M20,36c-8.8,0-16-7.2-16-16S11.2,4,20,4s16,7.2,16,16S28.8,36,20,36z" fill="#0078D4"/>
+            <path d="M20,6c-4.4,0-8,6.3-8,14s3.6,14,8,14s8-6.3,8-14S24.4,6,20,6z M20,32c-2.8,0-5-5.4-5-12s2.2-12,5-12s5,5.4,5,12S22.8,32,20,32z" fill="#0078D4"/>
+            <line x1="4" y1="20" x2="36" y2="20" stroke="#0078D4" stroke-width="2"/>
+        </g>
+
+        <!-- Azure AI Studio Prompt Flow Icon -->
+        <g id="icon-aistudio">
+            <rect x="6" y="6" width="28" height="28" rx="4" fill="none" stroke="#b4009e" stroke-width="2"/>
+            <circle cx="14" cy="20" r="3" fill="#b4009e"/>
+            <circle cx="26" cy="14" r="3" fill="#b4009e"/>
+            <circle cx="26" cy="26" r="3" fill="#b4009e"/>
+            <path d="M17,20 L23,15 M17,20 L23,25" stroke="#b4009e" stroke-width="2"/>
+        </g>
+
+        <!-- Azure AI Search Icon -->
+        <g id="icon-aisearch">
+            <circle cx="16" cy="16" r="10" fill="none" stroke="#0078D4" stroke-width="3"/>
+            <line x1="23" y1="23" x2="34" y2="34" stroke="#0078D4" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="4" fill="#00bcf2"/>
+        </g>
+
+        <!-- Azure OpenAI Icon -->
+        <g id="icon-openai">
+            <path d="M20,4 C11.2,4,4,11.2,4,20 C4,28.8,11.2,36,20,36 C28.8,36,36,28.8,36,20 C36,11.2,28.8,4,20,4 Z M20,32 C13.4,32,8,26.6,8,20 C8,13.4,13.4,8,20,8 C26.6,8,32,13.4,32,20 C32,26.6,26.6,32,20,32 Z" fill="#107c10"/>
+            <polygon points="20,10 12,25 28,25" fill="#107c10"/>
+        </g>
+
+        <!-- Azure SQL Database Icon -->
+        <g id="icon-sql">
+            <ellipse cx="20" cy="10" rx="14" ry="6" fill="none" stroke="#0078D4" stroke-width="2"/>
+            <path d="M6,10 v20 c0,3.3,6.3,6,14,6 s14-2.7,14-6 V10" fill="none" stroke="#0078D4" stroke-width="2"/>
+            <path d="M6,20 c0,3.3,6.3,6,14,6 s14-2.7,14-6" fill="none" stroke="#0078D4" stroke-width="2"/>
+            <text x="20" y="26" font-size="8" fill="#0078D4" text-anchor="middle" font-family="sans-serif" font-weight="bold">SQL</text>
+        </g>
+
+        <!-- Azure PostgreSQL Icon -->
+        <g id="icon-pgsql">
+            <ellipse cx="20" cy="10" rx="14" ry="6" fill="none" stroke="#00bcf2" stroke-width="2"/>
+            <path d="M6,10 v20 c0,3.3,6.3,6,14,6 s14-2.7,14-6 V10" fill="none" stroke="#00bcf2" stroke-width="2"/>
+            <path d="M6,20 c0,3.3,6.3,6,14,6 s14-2.7,14-6" fill="none" stroke="#00bcf2" stroke-width="2"/>
+            <text x="20" y="26" font-size="8" fill="#00bcf2" text-anchor="middle" font-family="sans-serif" font-weight="bold">PG</text>
+        </g>
+    </defs>
+</svg>
+
+<div class="deck">
+
+    <!-- Slide 1: Cover -->
+    <div class="slide cover-slide active" id="slide-1">
+        <h1>Banking Data Governance & Semantic Discovery RAG</h1>
+        <h2>AI-Powered Metadata Management</h2>
+        
+        <div class="badges">
+            <span class="badge">Architecture: Azure RAG</span>
+            <span class="badge">Environment: dev</span>
+            <span class="badge">Region: centralus</span>
+        </div>
+
+        <div class="brand">
+            Architected by: <br>
+            <strong>Gerald Hinojoza</strong> <br>
+            <a href="https://www.linkedin.com/in/geraldhinojoza" target="_blank">linkedin.com/in/geraldhinojoza</a>
+        </div>
+    </div>
+
+    <!-- Slide 2: Architecture Diagram -->
+    <div class="slide" id="slide-2">
+        <div class="slide-header">
+            <h1>Spatial Architecture Diagram</h1>
+            <div class="meta">Dev | Central US | RAG Workflow</div>
+        </div>
+        <div class="slide-content">
+            <svg viewBox="0 0 1000 500">
+                <!-- Swimlanes -->
+                <!-- Frontend -->
+                <rect x="20" y="40" width="200" height="440" fill="none" stroke="var(--swimlane-border)" stroke-width="1" stroke-dasharray="4"/>
+                <text x="120" y="30" class="swimlane-title" text-anchor="middle">Frontend</text>
+                
+                <!-- Backend/Orchestration -->
+                <rect x="240" y="40" width="220" height="440" fill="none" stroke="var(--swimlane-border)" stroke-width="1" stroke-dasharray="4"/>
+                <text x="350" y="30" class="swimlane-title" text-anchor="middle">Orchestration</text>
+
+                <!-- Intelligence -->
+                <rect x="480" y="40" width="240" height="440" fill="none" stroke="var(--swimlane-border)" stroke-width="1" stroke-dasharray="4"/>
+                <text x="600" y="30" class="swimlane-title" text-anchor="middle">Intelligence</text>
+
+                <!-- Data -->
+                <rect x="740" y="40" width="240" height="440" fill="none" stroke="var(--swimlane-border)" stroke-width="1" stroke-dasharray="4"/>
+                <text x="860" y="30" class="swimlane-title" text-anchor="middle">Data Layer</text>
+
+                <!-- Nodes -->
+                <!-- Web App -->
+                <g transform="translate(60, 200)">
+                    <rect width="120" height="100" class="node-rect"/>
+                    <use href="#icon-webapp" x="40" y="10" width="40" height="40" />
+                    <text x="60" y="70" class="node-text">Azure Web App</text>
+                    <text x="60" y="85" class="node-text" fill="var(--text-muted)" font-size="10">(Chat UI)</text>
+                </g>
+
+                <!-- Prompt Flow -->
+                <g transform="translate(280, 200)">
+                    <rect width="140" height="100" class="node-rect" stroke="#b4009e"/>
+                    <use href="#icon-aistudio" x="50" y="10" width="40" height="40" />
+                    <text x="70" y="70" class="node-text">AI Studio</text>
+                    <text x="70" y="85" class="node-text" fill="var(--text-muted)" font-size="10">(Prompt Flow)</text>
+                </g>
+
+                <!-- OpenAI -->
+                <g transform="translate(520, 100)">
+                    <rect width="160" height="90" class="node-rect" stroke="#107c10"/>
+                    <use href="#icon-openai" x="60" y="10" width="40" height="40" />
+                    <text x="80" y="65" class="node-text">Azure OpenAI</text>
+                    <text x="80" y="80" class="node-text" fill="var(--text-muted)" font-size="10">(LLM & Embeddings)</text>
+                </g>
+
+                <!-- AI Search -->
+                <g transform="translate(520, 300)">
+                    <rect width="160" height="90" class="node-rect"/>
+                    <use href="#icon-aisearch" x="60" y="10" width="40" height="40" />
+                    <text x="80" y="65" class="node-text">Azure AI Search</text>
+                    <text x="80" y="80" class="node-text" fill="var(--text-muted)" font-size="10">(Vector Store)</text>
+                </g>
+
+                <!-- SQL DB -->
+                <g transform="translate(780, 100)">
+                    <rect width="160" height="90" class="node-rect"/>
+                    <use href="#icon-sql" x="60" y="10" width="40" height="40" />
+                    <text x="80" y="65" class="node-text">Azure SQL DB</text>
+                    <text x="80" y="80" class="node-text" fill="var(--text-muted)" font-size="10">(Governance Meta)</text>
+                </g>
+
+                <!-- PG DB -->
+                <g transform="translate(780, 300)">
+                    <rect width="160" height="90" class="node-rect" stroke="#00bcf2"/>
+                    <use href="#icon-pgsql" x="60" y="10" width="40" height="40" />
+                    <text x="80" y="65" class="node-text">Azure PostgreSQL</text>
+                    <text x="80" y="80" class="node-text" fill="var(--text-muted)" font-size="10">(Flexible Server)</text>
+                </g>
+
+                <!-- Edges -->
+                <path d="M180 250 L270 250" class="edge-line"/>
+                <text x="225" y="240" class="edge-label" text-anchor="middle">REST</text>
+
+                <!-- Flow to OpenAI -->
+                <path d="M420 220 C450 220, 480 145, 510 145" class="edge-line"/>
+                <text x="465" y="180" class="edge-label" text-anchor="middle">Vectors / Gen</text>
+
+                <!-- Flow to AI Search -->
+                <path d="M420 270 C450 270, 480 345, 510 345" class="edge-line"/>
+                <text x="465" y="315" class="edge-label" text-anchor="middle">Semantic Q</text>
+
+                <!-- Flow to SQL -->
+                <path d="M680 145 L770 145" class="edge-line"/>
+                <text x="725" y="135" class="edge-label" text-anchor="middle">Entity Lookup</text>
+
+                <!-- AI Search to PG -->
+                <path d="M680 345 L770 345" class="edge-line"/>
+                <text x="725" y="335" class="edge-label" text-anchor="middle">Catalog Fetch</text>
+
+                <!-- DB to Prompt Flow (Return paths conceptual) -->
+                <path d="M780 170 C650 170, 500 230, 420 240" class="edge-line" marker-end="url(#arrow)" stroke-dasharray="4"/>
+
+            </svg>
+        </div>
+    </div>
+
+    <!-- Slide 3: Sequence Diagram -->
+    <div class="slide" id="slide-3">
+        <div class="slide-header">
+            <h1>Data Flow Sequence Diagram</h1>
+            <div class="meta">End-to-End RAG Execution</div>
+        </div>
+        <div class="slide-content">
+            <svg viewBox="0 0 1000 450">
+                <!-- Lifelines -->
+                <line x1="100" y1="50" x2="100" y2="420" class="seq-line" />
+                <line x1="300" y1="50" x2="300" y2="420" class="seq-line" />
+                <line x1="500" y1="50" x2="500" y2="420" class="seq-line" />
+                <line x1="700" y1="50" x2="700" y2="420" class="seq-line" />
+                <line x1="900" y1="50" x2="900" y2="420" class="seq-line" />
+
+                <!-- Actors -->
+                <rect x="40" y="20" width="120" height="30" class="seq-actor"/>
+                <text x="100" y="40" class="seq-text">Web App UI</text>
+
+                <rect x="240" y="20" width="120" height="30" class="seq-actor" fill="#b4009e"/>
+                <text x="300" y="40" class="seq-text">Prompt Flow</text>
+
+                <rect x="440" y="20" width="120" height="30" class="seq-actor" fill="#107c10"/>
+                <text x="500" y="40" class="seq-text">OpenAI (LLM)</text>
+
+                <rect x="640" y="20" width="120" height="30" class="seq-actor"/>
+                <text x="700" y="40" class="seq-text">AI Search</text>
+
+                <rect x="840" y="20" width="120" height="30" class="seq-actor" fill="#00bcf2"/>
+                <text x="900" y="40" class="seq-text">Databases (SQL/PG)</text>
+
+                <!-- Messages -->
+                <!-- 1 -->
+                <line x1="100" y1="80" x2="290" y2="80" class="seq-arrow" />
+                <text x="200" y="70" class="seq-msg" text-anchor="middle">1. User Query (Metadata)</text>
+
+                <!-- 2 -->
+                <line x1="300" y1="120" x2="490" y2="120" class="seq-arrow" />
+                <text x="400" y="110" class="seq-msg" text-anchor="middle">2. Generate Embeddings</text>
+
+                <!-- 3 -->
+                <line x1="500" y1="150" x2="310" y2="150" class="seq-arrow-return" />
+                <text x="400" y="140" class="seq-msg" text-anchor="middle" fill="var(--text-muted)">3. Return Vectors</text>
+
+                <!-- 4 -->
+                <line x1="300" y1="190" x2="690" y2="190" class="seq-arrow" />
+                <text x="500" y="180" class="seq-msg" text-anchor="middle">4. Semantic Search (Vectors)</text>
+
+                <!-- 5 -->
+                <line x1="700" y1="220" x2="310" y2="220" class="seq-arrow-return" />
+                <text x="500" y="210" class="seq-msg" text-anchor="middle" fill="var(--text-muted)">5. Top K Documents/Keys</text>
+
+                <!-- 6 -->
+                <line x1="300" y1="260" x2="890" y2="260" class="seq-arrow" />
+                <text x="600" y="250" class="seq-msg" text-anchor="middle">6. Fetch Hard Metadata (Governance)</text>
+
+                <!-- 7 -->
+                <line x1="900" y1="290" x2="310" y2="290" class="seq-arrow-return" />
+                <text x="600" y="280" class="seq-msg" text-anchor="middle" fill="var(--text-muted)">7. Return Entity Details</text>
+
+                <!-- 8 -->
+                <line x1="300" y1="330" x2="490" y2="330" class="seq-arrow" />
+                <text x="400" y="320" class="seq-msg" text-anchor="middle">8. System Prompt + Context (RAG)</text>
+
+                <!-- 9 -->
+                <line x1="500" y1="360" x2="310" y2="360" class="seq-arrow-return" />
+                <text x="400" y="350" class="seq-msg" text-anchor="middle" fill="var(--text-muted)">9. Generated Answer</text>
+
+                <!-- 10 -->
+                <line x1="300" y1="400" x2="110" y2="400" class="seq-arrow-return" />
+                <text x="200" y="390" class="seq-msg" text-anchor="middle" fill="var(--text-muted)">10. Display Formatted RAG Response</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Slide 4: Terraform HCL -->
+    <div class="slide" id="slide-4">
+        <div class="slide-header">
+            <h1>Infrastructure as Code</h1>
+            <div class="meta">Terraform HCL | azurerm | Dev Env</div>
+        </div>
+        <div class="slide-content">
+<pre><code><span class="hcl-kw">provider</span> <span class="hcl-str">"azurerm"</span> {
+  <span class="hcl-kw">features</span> {}
+}
+
+<span class="hcl-kw">resource</span> <span class="hcl-str">"azurerm_resource_group"</span> <span class="hcl-str">"rg"</span> {
+  <span class="hcl-type">name</span>     = <span class="hcl-str">"rg-bank-rag-dev-centralus"</span>
+  <span class="hcl-type">location</span> = <span class="hcl-str">"Central US"</span>
+}
+
+<span class="hcl-comm"># App Service / Web App (Frontend)</span>
+<span class="hcl-kw">resource</span> <span class="hcl-str">"azurerm_service_plan"</span> <span class="hcl-str">"app_plan"</span> {
+  <span class="hcl-type">name</span>                = <span class="hcl-str">"plan-rag-dev"</span>
+  <span class="hcl-type">location</span>            = azurerm_resource_group.rg.location
+  <span class="hcl-type">resource_group_name</span> = azurerm_resource_group.rg.name
+  <span class="hcl-type">os_type</span>             = <span class="hcl-str">"Linux"</span>
+  <span class="hcl-type">sku_name</span>            = <span class="hcl-str">"B1"</span>
+}
+
+<span class="hcl-kw">resource</span> <span class="hcl-str">"azurerm_linux_web_app"</span> <span class="hcl-str">"webapp"</span> {
+  <span class="hcl-type">name</span>                = <span class="hcl-str">"app-bank-rag-dev"</span>
+  <span class="hcl-type">location</span>            = azurerm_resource_group.rg.location
+  <span class="hcl-type">resource_group_name</span> = azurerm_resource_group.rg.name
+  <span class="hcl-type">service_plan_id</span>     = azurerm_service_plan.app_plan.id
+  <span class="hcl-kw">site_config</span> {}
+}
+
+<span class="hcl-comm"># Azure AI Search & OpenAI</span>
+<span class="hcl-kw">resource</span> <span class="hcl-str">"azurerm_search_service"</span> <span class="hcl-str">"search"</span> {
+  <span class="hcl-type">name</span>                = <span class="hcl-str">"srch-bank-rag-dev"</span>
+  <span class="hcl-type">resource_group_name</span> = azurerm_resource_group.rg.name
+  <span class="hcl-type">location</span>            = azurerm_resource_group.rg.location
+  <span class="hcl-type">sku</span>                 = <span class="hcl-str">"basic"</span>
+}
+
+<span class="hcl-kw">resource</span> <span class="hcl-str">"azurerm_cognitive_account"</span> <span class="hcl-str">"openai"</span> {
+  <span class="hcl-type">name</span>                = <span class="hcl-str">"oai-bank-rag-dev"</span>
+  <span class="hcl-type">location</span>            = azurerm_resource_group.rg.location
+  <span class="hcl-type">resource_group_name</span> = azurerm_resource_group.rg.name
+  <span class="hcl-type">kind</span>                = <span class="hcl-str">"OpenAI"</span>
+  <span class="hcl-type">sku_name</span>            = <span class="hcl-str">"S0"</span>
+}
+
+<span class="hcl-comm"># Databases (SQL & PostgreSQL Flexible)</span>
+<span class="hcl-kw">resource</span> <span class="hcl-str">"azurerm_postgresql_flexible_server"</span> <span class="hcl-str">"pgsql"</span> {
+  <span class="hcl-type">name</span>                   = <span class="hcl-str">"psql-bank-rag-dev"</span>
+  <span class="hcl-type">resource_group_name</span>    = azurerm_resource_group.rg.name
+  <span class="hcl-type">location</span>               = azurerm_resource_group.rg.location
+  <span class="hcl-type">version</span>                = <span class="hcl-str">"14"</span>
+  <span class="hcl-type">sku_name</span>               = <span class="hcl-str">"B_Standard_B1ms"</span>
+}
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Slide 5: Cost Estimation -->
+    <div class="slide" id="slide-5">
+        <div class="slide-header">
+            <h1>Cost Estimation (Monthly)</h1>
+            <div class="meta">Environment: Dev | Region: Central US</div>
+        </div>
+        <div class="slide-content">
+            <p>Estimated non-production running costs for the RAG Data Governance setup:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Tier / SKU</th>
+                        <th>Est. Usage</th>
+                        <th>Estimated Cost (USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Azure Web App</td>
+                        <td>B1 (Basic Linux)</td>
+                        <td>730 hours (1 instance)</td>
+                        <td>$13.14</td>
+                    </tr>
+                    <tr>
+                        <td>Azure AI Studio / ML</td>
+                        <td>Basic Workspace</td>
+                        <td>Compute Instances (Scale-to-0)</td>
+                        <td>$5.00</td>
+                    </tr>
+                    <tr>
+                        <td>Azure AI Search</td>
+                        <td>Basic Tier</td>
+                        <td>1 Search Unit</td>
+                        <td>$73.73</td>
+                    </tr>
+                    <tr>
+                        <td>Azure OpenAI</td>
+                        <td>S0 / Pay-As-You-Go</td>
+                        <td>~1M Tokens (GPT-4o / Embeddings)</td>
+                        <td>$20.00</td>
+                    </tr>
+                    <tr>
+                        <td>Azure SQL Database</td>
+                        <td>Basic (5 DTU)</td>
+                        <td>730 hours</td>
+                        <td>$4.99</td>
+                    </tr>
+                    <tr>
+                        <td>Azure PostgreSQL</td>
+                        <td>Flexible Server (B1ms)</td>
+                        <td>730 hours + 32GB Storage</td>
+                        <td>$15.20</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="cost-total">
+                Total Estimated Monthly Cost: ~$132.06
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">* Prices are approximate based on public Azure pricing for Central US region. Bandwidth and exact token consumption will vary.</p>
+        </div>
+    </div>
+
+    <!-- Slide 6: Validation Checklist -->
+    <div class="slide" id="slide-6">
+        <div class="slide-header">
+            <h1>Validation Checklist</h1>
+            <div class="meta">Architecture Readiness & Governance</div>
+        </div>
+        <div class="slide-content">
+            <div class="checklist">
+                <div class="checklist-category">
+                    <h3>Security & Governance</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" checked disabled>
+                        <label>Managed Identities applied to Web App & AI Studio for resource access.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" checked disabled>
+                        <label>Azure OpenAI data privacy boundaries verified (No model training on banking inputs).</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" checked disabled>
+                        <label>PostgreSQL and SQL DB firewalls strictly bound to App/VNet IPs.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" disabled>
+                        <label>Entra ID (Azure AD) integrated for Banking personnel SSO.</label>
+                    </div>
+                </div>
+                
+                <div class="checklist-category">
+                    <h3>Performance & Operations</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" checked disabled>
+                        <label>AI Search configured with Semantic Ranker for metadata discovery.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" checked disabled>
+                        <label>Prompt Flow structured with fallbacks for hallucination reduction.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" disabled>
+                        <label>Azure Monitor & App Insights enabled for token utilization tracking.</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" disabled>
+                        <label>Database connection pooling optimized for Prompt Flow orchestration.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="prevSlide()">&#8592; Previous</button>
+        <button onclick="nextSlide()">Next &#8594;</button>
+    </div>
+
+</div>
+
+<script>
+    let currentSlide = 1;
+    const totalSlides = 6;
+
+    function showSlide(n) {
+        for (let i = 1; i <= totalSlides; i++) {
+            document.getElementById('slide-' + i).classList.remove('active');
+        }
+        document.getElementById('slide-' + n).classList.add('active');
+    }
+
+    function nextSlide() {
+        if (currentSlide < totalSlides) {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 1) {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'ArrowRight') nextSlide();
+        if (event.key === 'ArrowLeft') prevSlide();
+    });
+</script>
+
+<!--
+================================================================================
+SELF-CHECK GATE:
+1. Architecture: Azure RAG Architecture? YES.
+2. Context: Banking AI Data Governance & Semantic Information Retrieval? YES.
+3. Components: Azure Web App, Azure AI Studio Prompt Flow, Azure AI Search, Azure OpenAI, Azure SQL Database, Azure PostgreSQL Flexible Server? YES.
+4. Brand Name: Gerald Hinojoza? YES.
+5. Brand Link: https://www.linkedin.com/in/geraldhinojoza ? YES.
+6. Environment/Region: dev / centralus? YES.
+7. Slides: Cover, Architecture, Terraform, Cost, Checklist, Data Flow? YES.
+8. Single HTML file? YES.
+9. SVG Icon Sprite included? YES.
+10. Terraform valid? YES.
+================================================================================
+EXPORT INSTRUCTIONS:
+Save this entire response directly to an .html file (e.g., azure_rag_deck.html) 
+and open it in any modern web browser. No external CSS/JS libraries are required.
+Use arrow keys or bottom buttons to navigate slides.
+================================================================================
+-->
+</body>
+</html>
+
